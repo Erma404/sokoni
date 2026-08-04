@@ -1,0 +1,1 @@
+update public.tracking_events set document_url = '/docs/' || split_part(document_url, '/docs/', 2) where document_url like 'https://example.com/docs/%';

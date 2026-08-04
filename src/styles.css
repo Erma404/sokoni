@@ -1,0 +1,173 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Sokoni Export design system.
+ * Palette: deep forest green, terracotta clay, sand/cream, charcoal, ochre.
+ * Type: Archivo (editorial sans) + Fredoka (modern rounded display).
+ */
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 6px);
+  --radius-xl: calc(var(--radius) + 12px);
+  --radius-2xl: calc(var(--radius) + 20px);
+
+  --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Outfit", ui-sans-serif, system-ui, sans-serif;
+
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-clay: var(--clay);
+  --color-clay-foreground: var(--clay-foreground);
+  --color-ochre: var(--ochre);
+  --color-ochre-foreground: var(--ochre-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+}
+
+:root {
+  --radius: 0.875rem;
+
+
+  --background: oklch(0.951 0.016 85.5);
+  --foreground: oklch(0.245 0.008 60);
+
+  --card: oklch(0.977 0.01 88);
+  --card-foreground: oklch(0.245 0.008 60);
+  --popover: oklch(0.977 0.01 88);
+  --popover-foreground: oklch(0.245 0.008 60);
+
+  /* deep forest green */
+  --primary: oklch(0.318 0.049 155);
+  --primary-foreground: oklch(0.966 0.014 88);
+
+  --secondary: oklch(0.906 0.019 84);
+  --secondary-foreground: oklch(0.318 0.049 155);
+
+  --muted: oklch(0.914 0.016 84);
+  --muted-foreground: oklch(0.485 0.014 65);
+
+  --accent: oklch(0.892 0.026 82);
+  --accent-foreground: oklch(0.318 0.049 155);
+
+  /* terracotta / clay red */
+  --clay: oklch(0.534 0.132 36);
+  --clay-foreground: oklch(0.977 0.01 88);
+
+  /* ochre accent */
+  --ochre: oklch(0.702 0.121 76);
+  --ochre-foreground: oklch(0.245 0.008 60);
+
+  --destructive: oklch(0.505 0.176 27);
+  --destructive-foreground: oklch(0.977 0.01 88);
+
+  --border: oklch(0.858 0.019 82);
+  --input: oklch(0.858 0.019 82);
+  --ring: oklch(0.318 0.049 155);
+}
+
+.dark {
+  --background: oklch(0.21 0.012 90);
+  --foreground: oklch(0.945 0.014 88);
+  --card: oklch(0.26 0.014 88);
+  --card-foreground: oklch(0.945 0.014 88);
+  --popover: oklch(0.26 0.014 88);
+  --popover-foreground: oklch(0.945 0.014 88);
+  --primary: oklch(0.62 0.075 155);
+  --primary-foreground: oklch(0.18 0.01 90);
+  --secondary: oklch(0.31 0.014 88);
+  --secondary-foreground: oklch(0.945 0.014 88);
+  --muted: oklch(0.31 0.014 88);
+  --muted-foreground: oklch(0.7 0.014 84);
+  --accent: oklch(0.34 0.02 84);
+  --accent-foreground: oklch(0.945 0.014 88);
+  --clay: oklch(0.6 0.13 36);
+  --clay-foreground: oklch(0.16 0.01 60);
+  --ochre: oklch(0.74 0.12 76);
+  --ochre-foreground: oklch(0.18 0.01 90);
+  --destructive: oklch(0.58 0.18 27);
+  --destructive-foreground: oklch(0.96 0.01 88);
+  --border: oklch(1 0 0 / 14%);
+  --input: oklch(1 0 0 / 16%);
+  --ring: oklch(0.62 0.075 155);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+  }
+
+  h1,
+  h2,
+  h3 {
+    letter-spacing: -0.015em;
+  }
+}
+
+@utility stencil {
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  text-transform: uppercase;
+}
+
+@utility eyebrow {
+  font-family: var(--font-display);
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: var(--color-muted-foreground);
+}
+
+@utility rule-top {
+  border-top: 1px solid var(--color-border);
+}
+
+/* Circular / soft-organic photo masks */
+@utility mask-circle {
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+@utility mask-organic {
+  border-radius: 48% 52% 44% 56% / 56% 44% 56% 44%;
+  overflow: hidden;
+}
+
+@utility mask-leaf {
+  border-radius: 9999px 2rem 9999px 2rem;
+  overflow: hidden;
+}
+
