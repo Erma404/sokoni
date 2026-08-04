@@ -28,7 +28,11 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5">
-        <Link to="/" aria-label="Sokoni Export home">
+        <Link
+          to="/"
+          aria-label="Sokoni Export home"
+          className="transition-opacity hover:opacity-70"
+        >
           <Wordmark />
         </Link>
 
@@ -46,6 +50,11 @@ export function Header() {
         </nav>
 
         <div className="hidden items-center gap-2 md:flex">
+          <Link to="/contact">
+            <Button variant="clay" size="sm">
+              Contact us
+            </Button>
+          </Link>
           <Link to="/rfq">
             <Button variant="ghost" size="sm">
               RFQ
@@ -106,6 +115,9 @@ export function Header() {
                 {item.label}
               </Link>
             ))}
+            <Link to="/contact" onClick={() => setOpen(false)} className="text-sm text-clay">
+              Contact us
+            </Link>
             <Link to="/rfq" onClick={() => setOpen(false)} className="text-sm text-foreground">
               RFQ cart ({count})
             </Link>
@@ -165,6 +177,9 @@ export function Footer() {
             </li>
             <li>
               <Link to="/logistics">Incoterms &amp; lead times</Link>
+            </li>
+            <li>
+              <Link to="/contact">Contact us</Link>
             </li>
           </ul>
         </div>

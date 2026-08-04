@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CatalogRouteImport } from './routes/catalog'
+import { Route as ContactRouteImport } from './routes/contact'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as DemoRouteImport } from './routes/demo'
 import { Route as FarmsRouteImport } from './routes/farms'
@@ -42,6 +43,11 @@ const AuthRoute = AuthRouteImport.update({
 const CatalogRoute = CatalogRouteImport.update({
   id: '/catalog',
   path: '/catalog',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardRoute = DashboardRouteImport.update({
@@ -100,6 +106,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/catalog': typeof CatalogRoute
+  '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/demo': typeof DemoRoute
   '/farms': typeof FarmsRoute
@@ -116,6 +123,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/catalog': typeof CatalogRoute
+  '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/demo': typeof DemoRoute
   '/farms': typeof FarmsRoute
@@ -133,6 +141,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/catalog': typeof CatalogRoute
+  '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/demo': typeof DemoRoute
   '/farms': typeof FarmsRoute
@@ -151,6 +160,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/catalog'
+    | '/contact'
     | '/dashboard'
     | '/demo'
     | '/farms'
@@ -167,6 +177,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/catalog'
+    | '/contact'
     | '/dashboard'
     | '/demo'
     | '/farms'
@@ -183,6 +194,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/catalog'
+    | '/contact'
     | '/dashboard'
     | '/demo'
     | '/farms'
@@ -200,6 +212,7 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRoute
   AuthRoute: typeof AuthRoute
   CatalogRoute: typeof CatalogRoute
+  ContactRoute: typeof ContactRoute
   DashboardRoute: typeof DashboardRoute
   DemoRoute: typeof DemoRoute
   FarmsRoute: typeof FarmsRoute
@@ -240,6 +253,13 @@ declare module '@tanstack/react-router' {
       path: '/catalog'
       fullPath: '/catalog'
       preLoaderRoute: typeof CatalogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard': {
@@ -320,6 +340,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRoute,
   AuthRoute: AuthRoute,
   CatalogRoute: CatalogRoute,
+  ContactRoute: ContactRoute,
   DashboardRoute: DashboardRoute,
   DemoRoute: DemoRoute,
   FarmsRoute: FarmsRoute,
