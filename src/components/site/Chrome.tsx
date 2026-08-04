@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Wordmark } from "@/components/site/Brand";
 import { cn } from "@/lib/utils";
 
-
 const NAV = [
   { to: "/catalog", label: "Catalog" },
   { to: "/track", label: "Track" },
@@ -32,7 +31,6 @@ export function Header() {
         <Link to="/" aria-label="Sokoni Export home">
           <Wordmark />
         </Link>
-
 
         <nav className="hidden items-center gap-7 md:flex">
           {NAV.map((item) => (
@@ -161,6 +159,9 @@ export function Footer() {
             </li>
             <li>
               <Link to="/rfq">Request a quote</Link>
+            </li>
+            <li>
+              <Link to="/sample-request">Request a sample</Link>
             </li>
             <li>
               <Link to="/logistics">Incoterms &amp; lead times</Link>

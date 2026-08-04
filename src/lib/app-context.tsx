@@ -1,4 +1,12 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -68,12 +76,16 @@ export function useSession() {
 
 /* ---------------- RFQ cart ---------------- */
 
+// Hard floor for a shippable order: below this, no RFQ can be submitted.
+export const MIN_ORDER_KG = 400;
+
 export interface RfqItem {
   productId: string;
   name: string;
   caliber: string;
   packaging: string;
   pricePerCarton: number;
+  netWeightKg: number;
   moq: number;
   cartons: number;
 }
@@ -86,10 +98,18 @@ interface RfqState {
   clear: () => void;
   count: number;
   estimate: number;
+  totalWeightKg: number;
+  meetsMinimum: boolean;
 }
 
 const RfqContext = createContext<RfqState | null>(null);
 const STORAGE_KEY = "sokoni.rfq";
+
+// Sample kits are a separate, non-commercial flow (see /sample-request) and
+// must never end up in the priced RFQ cart, including from stale localStorage.
+function isCommercial(item: Pick<RfqItem, "packaging">) {
+  return item.packaging !== "Sample kit";
+}
 
 export function RfqProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<RfqItem[]>([]);
@@ -97,7 +117,7 @@ export function RfqProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     try {
       const raw = window.localStorage.getItem(STORAGE_KEY);
-      if (raw) setItems(JSON.parse(raw) as RfqItem[]);
+      if (raw) setItems((JSON.parse(raw) as RfqItem[]).filter(isCommercial));
     } catch {
       /* ignore */
     }
@@ -112,6 +132,7 @@ export function RfqProvider({ children }: { children: ReactNode }) {
   }, [items]);
 
   const add = useCallback((item: Omit<RfqItem, "cartons">, cartons?: number) => {
+    if (!isCommercial(item)) return;
     setItems((prev) => {
       const existing = prev.find((i) => i.productId === item.productId);
       if (existing) {
@@ -135,6 +156,11 @@ export function RfqProvider({ children }: { children: ReactNode }) {
 
   const clear = useCallback(() => setItems([]), []);
 
+  const totalWeightKg = useMemo(
+    () => items.reduce((n, i) => n + i.cartons * i.netWeightKg, 0),
+    [items],
+  );
+
   const value = useMemo<RfqState>(
     () => ({
       items,
@@ -144,8 +170,10 @@ export function RfqProvider({ children }: { children: ReactNode }) {
       clear,
       count: items.reduce((n, i) => n + i.cartons, 0),
       estimate: items.reduce((n, i) => n + i.cartons * i.pricePerCarton, 0),
+      totalWeightKg,
+      meetsMinimum: totalWeightKg >= MIN_ORDER_KG,
     }),
-    [items, add, setQty, remove, clear],
+    [items, add, setQty, remove, clear, totalWeightKg],
   );
 
   return <RfqContext.Provider value={value}>{children}</RfqContext.Provider>;

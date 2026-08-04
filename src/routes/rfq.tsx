@@ -3,12 +3,13 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useRfq, useSession } from "@/lib/app-context";
+import { MIN_ORDER_KG, useRfq, useSession } from "@/lib/app-context";
 import { eur } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Progress } from "@/components/ui/progress";
 
 export const Route = createFileRoute("/rfq")({
   head: () => ({
@@ -22,7 +23,8 @@ export const Route = createFileRoute("/rfq")({
       { property: "og:title", content: "Request a Quote — Sokoni Export" },
       {
         property: "og:description",
-        content: "Send your volumes and Incoterm — we answer with a firm offer within one working day.",
+        content:
+          "Send your volumes and Incoterm — we answer with a firm offer within one working day.",
       },
     ],
   }),
@@ -30,7 +32,7 @@ export const Route = createFileRoute("/rfq")({
 });
 
 function RfqPage() {
-  const { items, setQty, remove, clear, estimate } = useRfq();
+  const { items, setQty, remove, clear, estimate, totalWeightKg, meetsMinimum } = useRfq();
   const { user } = useSession();
   const [submitting, setSubmitting] = useState(false);
   const [sent, setSent] = useState(false);
@@ -49,6 +51,10 @@ function RfqPage() {
       toast.error("Add at least one product to your RFQ");
       return;
     }
+    if (!meetsMinimum) {
+      toast.error(`${MIN_ORDER_KG}kg minimum per shipment required to submit an order`);
+      return;
+    }
     setSubmitting(true);
     const { error } = await supabase.from("quote_requests").insert({
       buyer_id: user?.id ?? null,
@@ -64,6 +70,7 @@ function RfqPage() {
         caliber: i.caliber,
         packaging: i.packaging,
         cartons: i.cartons,
+        weight_kg: i.cartons * i.netWeightKg,
       })),
     });
     setSubmitting(false);
@@ -118,7 +125,7 @@ function RfqPage() {
                   <div className="min-w-0 flex-1">
                     <div className="stencil text-sm font-medium">{i.name}</div>
                     <div className="text-xs text-muted-foreground">
-                      {i.packaging} · caliber {i.caliber} · MOQ {i.moq}
+                      {i.packaging} · caliber {i.caliber} · {i.cartons * i.netWeightKg}kg
                     </div>
                   </div>
                   <Input
@@ -144,10 +151,40 @@ function RfqPage() {
             </ul>
           )}
           {items.length > 0 && (
-            <div className="mt-4 flex items-baseline justify-between">
-              <span className="eyebrow">Indicative total</span>
-              <span className="stencil text-xl font-medium text-clay">{eur(estimate)}</span>
-            </div>
+            <>
+              <div className="mt-4 flex items-baseline justify-between">
+                <span className="eyebrow">Indicative total</span>
+                <span className="stencil text-xl font-medium text-clay">{eur(estimate)}</span>
+              </div>
+
+              <div
+                className={`mt-6 border p-4 ${
+                  meetsMinimum ? "border-border bg-secondary" : "border-clay/40 bg-clay/5"
+                }`}
+              >
+                <div className="flex items-baseline justify-between text-sm">
+                  <span
+                    className={meetsMinimum ? "font-medium text-primary" : "font-medium text-clay"}
+                  >
+                    {meetsMinimum ? "Minimum reached" : "Below shipment minimum"}
+                  </span>
+                  <span className="tabular-nums text-muted-foreground">
+                    {totalWeightKg}kg / {MIN_ORDER_KG}kg minimum
+                  </span>
+                </div>
+                <Progress
+                  value={Math.min(100, (totalWeightKg / MIN_ORDER_KG) * 100)}
+                  className="mt-2"
+                />
+                {!meetsMinimum && (
+                  <p className="mt-3 text-sm text-muted-foreground">
+                    {MIN_ORDER_KG}kg minimum per shipment required to submit an order. Add{" "}
+                    <strong className="text-primary">{MIN_ORDER_KG - totalWeightKg}kg</strong> more
+                    — any mix of products from the catalog counts toward the threshold.
+                  </p>
+                )}
+              </div>
+            </>
           )}
         </section>
 
@@ -208,8 +245,19 @@ function RfqPage() {
                 onChange={(e) => setForm({ ...form, message: e.target.value })}
               />
             </Field>
-            <Button type="submit" variant="clay" className="w-full" disabled={submitting}>
-              {submitting ? "Sending…" : "Send quote request"}
+            <Button
+              type="submit"
+              variant="clay"
+              className="w-full"
+              disabled={submitting || !items.length || !meetsMinimum}
+            >
+              {submitting
+                ? "Sending…"
+                : !items.length
+                  ? "Add products to your RFQ"
+                  : !meetsMinimum
+                    ? `${MIN_ORDER_KG - totalWeightKg}kg short of the ${MIN_ORDER_KG}kg minimum`
+                    : "Send quote request"}
             </Button>
           </form>
         </section>

@@ -18,6 +18,7 @@ import { Route as DemoRouteImport } from './routes/demo'
 import { Route as FarmsRouteImport } from './routes/farms'
 import { Route as LogisticsRouteImport } from './routes/logistics'
 import { Route as RfqRouteImport } from './routes/rfq'
+import { Route as SampleRequestRouteImport } from './routes/sample-request'
 import { Route as ForwarderTokenRouteImport } from './routes/forwarder.$token'
 import { Route as TrackIndexRouteImport } from './routes/track.index'
 import { Route as TrackCodeRouteImport } from './routes/track.$code'
@@ -68,6 +69,11 @@ const RfqRoute = RfqRouteImport.update({
   path: '/rfq',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SampleRequestRoute = SampleRequestRouteImport.update({
+  id: '/sample-request',
+  path: '/sample-request',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ForwarderTokenRoute = ForwarderTokenRouteImport.update({
   id: '/forwarder/$token',
   path: '/forwarder/$token',
@@ -99,6 +105,7 @@ export interface FileRoutesByFullPath {
   '/farms': typeof FarmsRoute
   '/logistics': typeof LogisticsRoute
   '/rfq': typeof RfqRoute
+  '/sample-request': typeof SampleRequestRoute
   '/forwarder/$token': typeof ForwarderTokenRoute
   '/track/$code': typeof TrackCodeRoute
   '/track/': typeof TrackIndexRoute
@@ -114,6 +121,7 @@ export interface FileRoutesByTo {
   '/farms': typeof FarmsRoute
   '/logistics': typeof LogisticsRoute
   '/rfq': typeof RfqRoute
+  '/sample-request': typeof SampleRequestRoute
   '/forwarder/$token': typeof ForwarderTokenRoute
   '/track/$code': typeof TrackCodeRoute
   '/track': typeof TrackIndexRoute
@@ -130,6 +138,7 @@ export interface FileRoutesById {
   '/farms': typeof FarmsRoute
   '/logistics': typeof LogisticsRoute
   '/rfq': typeof RfqRoute
+  '/sample-request': typeof SampleRequestRoute
   '/forwarder/$token': typeof ForwarderTokenRoute
   '/track/$code': typeof TrackCodeRoute
   '/track/': typeof TrackIndexRoute
@@ -147,6 +156,7 @@ export interface FileRouteTypes {
     | '/farms'
     | '/logistics'
     | '/rfq'
+    | '/sample-request'
     | '/forwarder/$token'
     | '/track/$code'
     | '/track/'
@@ -162,6 +172,7 @@ export interface FileRouteTypes {
     | '/farms'
     | '/logistics'
     | '/rfq'
+    | '/sample-request'
     | '/forwarder/$token'
     | '/track/$code'
     | '/track'
@@ -177,6 +188,7 @@ export interface FileRouteTypes {
     | '/farms'
     | '/logistics'
     | '/rfq'
+    | '/sample-request'
     | '/forwarder/$token'
     | '/track/$code'
     | '/track/'
@@ -193,6 +205,7 @@ export interface RootRouteChildren {
   FarmsRoute: typeof FarmsRoute
   LogisticsRoute: typeof LogisticsRoute
   RfqRoute: typeof RfqRoute
+  SampleRequestRoute: typeof SampleRequestRoute
   ForwarderTokenRoute: typeof ForwarderTokenRoute
   TrackCodeRoute: typeof TrackCodeRoute
   TrackIndexRoute: typeof TrackIndexRoute
@@ -264,6 +277,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RfqRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sample-request': {
+      id: '/sample-request'
+      path: '/sample-request'
+      fullPath: '/sample-request'
+      preLoaderRoute: typeof SampleRequestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/forwarder/$token': {
       id: '/forwarder/$token'
       path: '/forwarder/$token'
@@ -305,6 +325,7 @@ const rootRouteChildren: RootRouteChildren = {
   FarmsRoute: FarmsRoute,
   LogisticsRoute: LogisticsRoute,
   RfqRoute: RfqRoute,
+  SampleRequestRoute: SampleRequestRoute,
   ForwarderTokenRoute: ForwarderTokenRoute,
   TrackCodeRoute: TrackCodeRoute,
   TrackIndexRoute: TrackIndexRoute,
