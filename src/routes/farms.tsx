@@ -9,7 +9,8 @@ import {
   Thermometer,
 } from "lucide-react";
 import farmerImg from "@/assets/farmer-portrait.jpg";
-import orchardImg from "@/assets/hero-orchard.jpg";
+import farmHeaderImg from "@/assets/sokoni-loading-hero.png";
+import kirinyagaImg from "@/assets/hero-orchard.jpg";
 import coldImg from "@/assets/cold-chain.jpg";
 
 export const Route = createFileRoute("/farms")({
@@ -45,7 +46,7 @@ const FARMS = [
       text: "We stopped selling to brokers in 2019. Now we know exactly which market our fruit goes to, and we get paid on quality, not on volume.",
       by: "Grace Wanjiru, chair, Kirinyaga Highlands Co-op",
     },
-    image: orchardImg,
+    image: kirinyagaImg,
   },
   {
     name: "Murang'a Ridge Estate",
@@ -168,8 +169,8 @@ function Farms() {
             <div className="relative">
               <div aria-hidden className="absolute -inset-4 rounded-full border border-ochre/40" />
               <img
-                src={orchardImg}
-                alt="Aerial view of a certified Hass avocado orchard in the Kenyan highlands"
+                src={farmHeaderImg}
+                alt="Sokoni Export worker loading Hass avocado crates onto a truck at a Kenyan farm"
                 width={900}
                 height={900}
                 className="mask-circle aspect-square w-full max-w-xs object-cover sm:max-w-sm"

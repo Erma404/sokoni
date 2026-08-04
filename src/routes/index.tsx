@@ -10,42 +10,13 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import heroImg from "@/assets/sokoni-loading-hero.png.asset.json";
+import heroImg from "@/assets/hero-crate.png";
 import packhouseImg from "@/assets/packhouse-crates.jpg";
 import coldChainImg from "@/assets/cold-chain.jpg";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { STAGES } from "@/lib/checkpoints";
+import { RouteStepper } from "@/components/site/RouteStepper";
 
-const REASSURANCE = [
-  {
-    icon: ShieldCheck,
-    title: "Certified at source",
-    body: "GlobalG.A.P. and EU Organic farms, phytosanitary certificate on every lot.",
-  },
-  {
-    icon: FileCheck2,
-    title: "Documents attached",
-    body: "Lab analysis, phyto, invoice and delivery note downloadable per shipment.",
-  },
-  {
-    icon: Timer,
-    title: "Answer in 24 h",
-    body: "Quote-based pricing per lot and Incoterm, one working day response.",
-  },
-  {
-    icon: Handshake,
-    title: "Direct trade",
-    body: "No aggregator, no blended lots — one farm block per order reference.",
-  },
-];
-
-const STATS = [
-  { value: "48 h", label: "Nairobi → Rungis", body: "By airfreight, cold chain unbroken." },
-  { value: "9", label: "Logged checkpoints", body: "From farm block to buyer signature." },
-  { value: "6", label: "Partner farms", body: "Murang'a, Kandara and Meru, contracted direct." },
-  { value: "100 %", label: "Traceable cartons", body: "Every carton tied to its own record." },
-];
 
 
 
@@ -74,15 +45,45 @@ function Index() {
   const navigate = useNavigate();
   const [code, setCode] = useState("");
 
+  const REASSURANCE = [
+    {
+      icon: ShieldCheck,
+      title: "Certified at source",
+      body: "GlobalG.A.P. and EU Organic farms, phytosanitary certificate on every lot.",
+    },
+    {
+      icon: FileCheck2,
+      title: "Documents attached",
+      body: "Lab analysis, phyto, invoice and delivery note downloadable per shipment.",
+    },
+    {
+      icon: Timer,
+      title: "Answer in 24 h",
+      body: "Quote-based pricing per lot and Incoterm, one working day response.",
+    },
+    {
+      icon: Handshake,
+      title: "Direct trade",
+      body: "No aggregator, no blended lots — one farm block per order reference.",
+    },
+  ];
+
+  const STATS = [
+    { value: "48 h", label: "Nairobi → Rungis", body: "By airfreight, cold chain unbroken." },
+    { value: "9", label: "Logged checkpoints", body: "From farm block to buyer signature." },
+    { value: "6", label: "Partner farms", body: "Murang'a, Kandara and Meru, contracted direct." },
+    { value: "100 %", label: "Traceable cartons", body: "Every carton tied to its own record." },
+  ];
+
   return (
     <>
       {/* Hero */}
       <section className="relative overflow-hidden">
         <img
-          src={heroImg.url}
-          alt="Hass avocado orchard in the Kenyan highlands at dusk"
-          width={1600}
-          height={1200}
+          src={heroImg}
+          alt="Sokoni Export crate of freshly picked Hass avocados, Kenya to Paris-Rungis"
+          width={1200}
+          height={896}
           className="h-[78vh] min-h-[520px] w-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-[oklch(0.24_0.02_150_/_0.88)] via-[oklch(0.24_0.02_150_/_0.6)] to-transparent" />
@@ -217,7 +218,7 @@ function Index() {
 
       {/* Traceability — 9-step stepper */}
       <section className="border-y border-border bg-secondary">
-        <div className="mx-auto max-w-6xl px-5 py-20">
+        <div className="mx-auto max-w-6xl px-5 py-20 sm:px-8 lg:px-12">
           <div className="max-w-2xl">
             <p className="eyebrow">The whole point</p>
             <h2 className="stencil mt-3 text-3xl font-medium text-primary sm:text-4xl">
@@ -230,28 +231,7 @@ function Index() {
             </p>
           </div>
 
-          <ol className="relative mt-12 grid gap-y-10 md:grid-cols-3">
-            <span
-              aria-hidden
-              className="absolute left-5 top-2 hidden h-[calc(100%-1rem)] w-px bg-border md:block"
-            />
-            {STAGES.map((s, i) => (
-              <li key={s.key} className="relative flex gap-4 pr-6">
-                <div className="flex flex-col items-center">
-                  <span className="flex size-10 shrink-0 items-center justify-center rounded-full border border-clay/35 bg-card text-xs font-semibold text-clay">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  {i < STAGES.length - 1 && (
-                    <span aria-hidden className="mt-1 w-px flex-1 bg-border" />
-                  )}
-                </div>
-                <div className="pb-1">
-                  <div className="stencil text-xs font-medium text-primary">{s.label}</div>
-                  <p className="mt-1 text-sm text-muted-foreground">{s.blurb}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
+          <RouteStepper />
 
           <div className="mt-10 flex flex-wrap gap-3">
             <Link to="/track">
