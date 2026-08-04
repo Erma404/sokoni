@@ -17,10 +17,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { RouteStepper } from "@/components/site/RouteStepper";
 
-
-
-
-
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
@@ -216,18 +212,18 @@ function Index() {
         </div>
       </section>
 
-      {/* Traceability — 9-step stepper */}
+      {/* Traceability — 6-milestone stepper (grouping the 9 tracked checkpoints) */}
       <section className="border-y border-border bg-secondary">
         <div className="mx-auto max-w-6xl px-5 py-20 sm:px-8 lg:px-12">
           <div className="max-w-2xl">
             <p className="eyebrow">The whole point</p>
             <h2 className="stencil mt-3 text-3xl font-medium text-primary sm:text-4xl">
-              Nine checkpoints. No black box.
+              Six milestones. No black box.
             </h2>
             <p className="mt-5 text-muted-foreground">
-              Traceability is not a page on this site — it is the product. Sokoni logs the origin and
-              quality stages; our freight forwarder logs clearance and transit through a restricted
-              per-shipment link. Nobody else sees your order.
+              Traceability is not a page on this site — it is the product. Sokoni logs the origin
+              and quality stages; our freight forwarder logs clearance and transit through a
+              restricted per-shipment link. Nobody else sees your order.
             </p>
           </div>
 
@@ -256,16 +252,12 @@ function Index() {
         </div>
       </section>
 
-
       {/* Editorial split */}
       <section className="border-y border-border bg-secondary">
         <div className="mx-auto grid max-w-6xl items-center gap-0 md:grid-cols-2">
           <div className="flex justify-center p-8 sm:p-14">
             <div className="relative">
-              <div
-                aria-hidden
-                className="absolute -inset-5 rounded-full border border-clay/30"
-              />
+              <div aria-hidden className="absolute -inset-5 rounded-full border border-clay/30" />
               <img
                 src={packhouseImg}
                 alt="Graded Hass avocados packed into export crates at the packhouse"
@@ -302,7 +294,9 @@ function Index() {
       <section className="mx-auto grid max-w-6xl items-center gap-0 md:grid-cols-2">
         <div className="order-2 flex flex-col justify-center gap-5 p-8 sm:p-14 md:order-1">
           <p className="eyebrow">Logistics</p>
-          <h2 className="stencil text-2xl font-medium text-primary sm:text-3xl">DAP or DDP Rungis</h2>
+          <h2 className="stencil text-2xl font-medium text-primary sm:text-3xl">
+            DAP or DDP Rungis
+          </h2>
           <p className="text-muted-foreground">
             Airfreight from Nairobi in 48 hours, or reefer sea freight in 24–26 days. Pricing is
             quote-based per lot and Incoterm — add products to an RFQ and our trade desk answers
@@ -328,7 +322,6 @@ function Index() {
           />
         </div>
       </section>
-
     </>
   );
 }

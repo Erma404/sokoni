@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { STAGES, type StageOwner } from "@/lib/checkpoints";
+import { stageByKey, type StageOwner } from "@/lib/checkpoints";
 
 type Point = {
   x: number;
@@ -7,18 +7,63 @@ type Point = {
   side: "top" | "bottom";
 };
 
-// True S-curve (sigmoid): top-left → steep diagonal through the middle → bottom-right.
-// Nine points are placed along the single cubic-bezier S, parameterized by t.
+interface Milestone {
+  key: string;
+  label: string;
+  blurb: string;
+  owner: StageOwner;
+  fields: string[];
+}
+
+// Groups the 9 real tracking checkpoints (src/lib/checkpoints.ts — unchanged,
+// still drives order tracking on /track and /forwarder) into 6 visual
+// milestones so the homepage stepper stays readable. Owner reflects who holds
+// custody once each milestone completes; fields are the union of the
+// underlying checkpoints' tracked data fields.
+function milestone(key: string, label: string, blurb: string, stageKeys: string[]): Milestone {
+  const stages = stageKeys
+    .map((k) => stageByKey(k))
+    .filter((s): s is NonNullable<typeof s> => Boolean(s));
+  return {
+    key,
+    label,
+    blurb,
+    owner: stages[stages.length - 1]?.owner ?? "sokoni",
+    fields: stages.flatMap((s) => s.fields ?? []),
+  };
+}
+
+const MILESTONES: Milestone[] = [
+  milestone("farm", "Farm", "Lot allocated to a certified farm block.", ["farm"]),
+  milestone("harvested", "Harvested", "Picked at target dry matter.", ["harvested"]),
+  milestone("packed", "Packed & Inspected", "Graded, sized, packed and lab-cleared for export.", [
+    "packhouse",
+    "quality_control",
+  ]),
+  milestone(
+    "cold_export",
+    "Cold Chain & Export",
+    "Pre-cooled at 5–6 °C, then cleared through Nairobi customs.",
+    ["cold_storage", "export_clearance"],
+  ),
+  milestone(
+    "transit",
+    "In Transit & Arrival",
+    "Airfreight or reefer vessel, cleared on arrival at Rungis.",
+    ["in_transit", "arrival_rungis"],
+  ),
+  milestone("delivered", "Delivered", "Received by the buyer.", ["delivered"]),
+];
+
+// Same single cubic-bezier S-curve as before, now sampled at 6 evenly spaced
+// points (t = i/5) instead of 9.
 const STAGE_POINTS: Point[] = [
-  { x: 100, y: 120, side: "top" },      // Farm
-  { x: 299, y: 138, side: "top" },      // Harvested
-  { x: 456, y: 186, side: "top" },      // Packhouse
-  { x: 585, y: 253, side: "top" },      // Quality Control
-  { x: 700, y: 330, side: "bottom" },   // Cold Storage
-  { x: 815, y: 407, side: "bottom" },   // Export Clearance
-  { x: 944, y: 474, side: "bottom" },   // In Transit
-  { x: 1101, y: 522, side: "bottom" },  // Arrival Rungis
-  { x: 1300, y: 540, side: "bottom" },  // Delivered
+  { x: 100, y: 120, side: "top" }, // Farm
+  { x: 398, y: 164, side: "top" }, // Harvested
+  { x: 609, y: 268, side: "top" }, // Packed & Inspected
+  { x: 791, y: 392, side: "bottom" }, // Cold Chain & Export
+  { x: 1002, y: 496, side: "bottom" }, // In Transit & Arrival
+  { x: 1300, y: 540, side: "bottom" }, // Delivered
 ];
 
 const ROUTE_PATH = "M 100 120 C 700 120 700 540 1300 540";
@@ -63,10 +108,17 @@ export function RouteStepper() {
         viewBox="0 0 1400 680"
         className="hidden w-full overflow-visible md:block"
         role="img"
-        aria-label="9-step farm-to-delivery route, select a step for details"
+        aria-label="6-milestone farm-to-delivery route, select a milestone for details"
       >
         <defs>
-          <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+          <marker
+            id="arrowhead"
+            markerWidth="10"
+            markerHeight="7"
+            refX="9"
+            refY="3.5"
+            orient="auto"
+          >
             <polygon points="0 0, 10 3.5, 0 7" fill="currentColor" className="text-clay" />
           </marker>
         </defs>
@@ -104,7 +156,7 @@ export function RouteStepper() {
           className="text-background/60"
         />
 
-        {STAGES.map((stage, i) => {
+        {MILESTONES.map((stage, i) => {
           const p = STAGE_POINTS[i];
           if (!p) return null;
           const isActive = activeKey === stage.key;
@@ -118,9 +170,7 @@ export function RouteStepper() {
           const panelWidth = 176;
           const panelHeight = 30 + (stage.fields?.length ?? 0) * 16;
           const panelX = p.x - panelWidth / 2;
-          const panelY = labelAbove
-            ? titleY - 10 - panelHeight
-            : blurbBottomY + 18;
+          const panelY = labelAbove ? titleY - 10 - panelHeight : blurbBottomY + 18;
 
           const activate = () => setActiveKey(stage.key);
           const deactivate = () => setActiveKey((k) => (k === stage.key ? null : k));
@@ -147,12 +197,7 @@ export function RouteStepper() {
                   }
                 }}
               >
-                <circle
-                  cx={p.x}
-                  cy={p.y}
-                  r={CIRCLE_R + 10}
-                  fill="transparent"
-                />
+                <circle cx={p.x} cy={p.y} r={CIRCLE_R + 10} fill="transparent" />
                 <g
                   style={{
                     transformBox: "fill-box",
@@ -174,7 +219,11 @@ export function RouteStepper() {
                     y={p.y}
                     textAnchor="middle"
                     dominantBaseline="central"
-                    className={isActive ? "fill-card text-[16px] font-medium" : "fill-clay text-[16px] font-medium"}
+                    className={
+                      isActive
+                        ? "fill-card text-[16px] font-medium"
+                        : "fill-clay text-[16px] font-medium"
+                    }
                     style={{ fontFamily: "var(--font-display)", transition: "fill 180ms ease" }}
                   >
                     {String(i + 1).padStart(2, "0")}
@@ -235,7 +284,10 @@ export function RouteStepper() {
                       <ul className="mt-1.5 space-y-0.5 text-left text-[11px] leading-tight text-muted-foreground">
                         {stage.fields.map((f) => (
                           <li key={f} className="flex items-start gap-1">
-                            <span aria-hidden className="mt-1 size-1 shrink-0 rounded-full bg-clay" />
+                            <span
+                              aria-hidden
+                              className="mt-1 size-1 shrink-0 rounded-full bg-clay"
+                            />
                             {f}
                           </li>
                         ))}
@@ -251,11 +303,8 @@ export function RouteStepper() {
 
       {/* Mobile: vertical stacked stepper */}
       <ol className="relative space-y-6 md:hidden">
-        <span
-          aria-hidden
-          className="absolute left-5 top-2 h-[calc(100%-1rem)] w-px bg-border"
-        />
-        {STAGES.map((s, i) => {
+        <span aria-hidden className="absolute left-5 top-2 h-[calc(100%-1rem)] w-px bg-border" />
+        {MILESTONES.map((s, i) => {
           const isActive = activeKey === s.key;
           return (
             <li key={s.key} className="relative flex gap-4 pr-2">
@@ -263,7 +312,7 @@ export function RouteStepper() {
                 <span className="flex size-10 shrink-0 items-center justify-center rounded-full border border-clay/35 bg-card text-xs font-medium text-clay">
                   {String(i + 1).padStart(2, "0")}
                 </span>
-                {i < STAGES.length - 1 && (
+                {i < MILESTONES.length - 1 && (
                   <span aria-hidden className="mt-1 w-px flex-1 bg-border" />
                 )}
               </div>
@@ -284,7 +333,10 @@ export function RouteStepper() {
                       <ul className="mt-1.5 space-y-0.5 text-left text-xs leading-tight text-muted-foreground">
                         {s.fields.map((f) => (
                           <li key={f} className="flex items-start gap-1">
-                            <span aria-hidden className="mt-1.5 size-1 shrink-0 rounded-full bg-clay" />
+                            <span
+                              aria-hidden
+                              className="mt-1.5 size-1 shrink-0 rounded-full bg-clay"
+                            />
                             {f}
                           </li>
                         ))}
