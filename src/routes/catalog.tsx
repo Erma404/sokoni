@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { MIN_ORDER_KG, useRfq } from "@/lib/app-context";
 import { eur } from "@/lib/format";
+import { useT } from "@/lib/language";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import packhouseImg from "@/assets/packhouse-crates.jpg";
@@ -13,22 +14,71 @@ import packhouseImg from "@/assets/packhouse-crates.jpg";
 export const Route = createFileRoute("/catalog")({
   head: () => ({
     meta: [
-      { title: "Hass Avocado Catalog — Sokoni Export" },
+      { title: "Catalogue avocat Hass — Sokoni Export" },
       {
         name: "description",
         content:
-          "Kenyan Hass avocado by caliber and packaging format: 10 kg crates, 4 kg crates, 2 kg premium packs and sample kits. EUR pricing, MOQ and certifications per line.",
+          "Avocat Hass kenyan par calibre et format : caisses de 10 kg, caisses de 4 kg, packs premium de 2 kg et kits d'échantillon. Tarifs en EUR, MOQ et certifications par ligne.",
       },
-      { property: "og:title", content: "Hass Avocado Catalog — Sokoni Export" },
+      { property: "og:title", content: "Catalogue avocat Hass — Sokoni Export" },
       {
         property: "og:description",
         content:
-          "Calibers, packaging formats, EUR pricing and MOQ for certified Kenyan Hass avocado.",
+          "Calibres, formats de conditionnement, tarifs EUR et MOQ pour l'avocat Hass kenyan certifié.",
       },
     ],
   }),
   component: Catalog,
 });
+
+const COPY = {
+  fr: {
+    seasonHass: "Saison 2026 · Hass",
+    title: "Catalogue",
+    intro: (min: number) =>
+      `Les prix sont des références indicatives départ conditionnement, en EUR. Le tarif final dépend du volume, de l'Incoterm et de la fenêtre d'expédition — constituez un devis et notre bureau commercial répond sous un jour ouvré. ${min}kg minimum de poids combiné par commande, tous produits confondus.`,
+    requestSample: "Demander un échantillon",
+    search: "Rechercher",
+    caliber: "Calibre",
+    packaging: "Conditionnement",
+    certification: "Certification",
+    all: "Tous",
+    loading: "Chargement du catalogue…",
+    noMatch: "Aucune ligne ne correspond à ces filtres.",
+    perCarton: "par carton",
+    perKg: "/ kg",
+    packs: "packs",
+    crates: "caisses",
+    ifOrderedAlone: "si commandé seul",
+    addToRfq: "Ajouter au devis",
+    sampleOfLine: "Demander un échantillon de cette ligne",
+    footerNote: "La tarification commerciale se fait sur devis. Rien n'est facturé en ligne.",
+    reviewCart: "Voir le panier de devis",
+  },
+  en: {
+    seasonHass: "Season 2026 · Hass",
+    title: "Catalog",
+    intro: (min: number) =>
+      `Prices are indicative EX-packhouse references in EUR. Final pricing depends on volume, Incoterm and shipping window — build an RFQ and our trade desk replies within one working day. ${min}kg minimum combined weight per shipment, mixed across any products.`,
+    requestSample: "Request a sample",
+    search: "Search",
+    caliber: "Caliber",
+    packaging: "Packaging",
+    certification: "Certification",
+    all: "All",
+    loading: "Loading catalog…",
+    noMatch: "No lines match these filters.",
+    perCarton: "per carton",
+    perKg: "/ kg",
+    packs: "packs",
+    crates: "crates",
+    ifOrderedAlone: "if ordered alone",
+    addToRfq: "Add to RFQ",
+    sampleOfLine: "Request a sample of this line",
+    footerNote: "Trade pricing is quote-based. Nothing is charged online.",
+    reviewCart: "Review RFQ cart",
+  },
+};
 
 interface Product {
   id: string;
@@ -47,6 +97,7 @@ interface Product {
 
 function Catalog() {
   const { add } = useRfq();
+  const t = useT(COPY);
   const [q, setQ] = useState("");
   const [caliber, setCaliber] = useState("all");
   const [packaging, setPackaging] = useState("all");
@@ -97,17 +148,12 @@ function Catalog() {
     <div className="mx-auto max-w-6xl px-5 py-14">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <p className="eyebrow">Season 2026 · Hass</p>
-          <h1 className="stencil mt-3 text-3xl font-medium text-primary sm:text-4xl">Catalog</h1>
-          <p className="mt-4 max-w-2xl text-muted-foreground">
-            Prices are indicative EX-packhouse references in EUR. Final pricing depends on volume,
-            Incoterm and shipping window — build an RFQ and our trade desk replies within one
-            working day. {MIN_ORDER_KG}kg minimum combined weight per shipment, mixed across any
-            products.
-          </p>
+          <p className="eyebrow">{t.seasonHass}</p>
+          <h1 className="stencil mt-3 text-3xl font-medium text-primary sm:text-4xl">{t.title}</h1>
+          <p className="mt-4 max-w-2xl text-muted-foreground">{t.intro(MIN_ORDER_KG)}</p>
         </div>
         <Link to="/sample-request" className="shrink-0">
-          <Button variant="outline">Request a sample</Button>
+          <Button variant="outline">{t.requestSample}</Button>
         </Link>
       </div>
 
@@ -118,25 +164,38 @@ function Catalog() {
           <Input
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Search"
+            placeholder={t.search}
             className="pl-9"
-            aria-label="Search products"
+            aria-label={t.search}
           />
         </div>
-        <SelectFilter label="Caliber" value={caliber} onChange={setCaliber} options={calibers} />
         <SelectFilter
-          label="Packaging"
+          label={t.caliber}
+          allLabel={t.all}
+          value={caliber}
+          onChange={setCaliber}
+          options={calibers}
+        />
+        <SelectFilter
+          label={t.packaging}
+          allLabel={t.all}
           value={packaging}
           onChange={setPackaging}
           options={packagings}
         />
-        <SelectFilter label="Certification" value={cert} onChange={setCert} options={certs} />
+        <SelectFilter
+          label={t.certification}
+          allLabel={t.all}
+          value={cert}
+          onChange={setCert}
+          options={certs}
+        />
       </div>
 
       {isLoading ? (
-        <p className="py-16 text-sm text-muted-foreground">Loading catalog…</p>
+        <p className="py-16 text-sm text-muted-foreground">{t.loading}</p>
       ) : filtered.length === 0 ? (
-        <p className="py-16 text-sm text-muted-foreground">No lines match these filters.</p>
+        <p className="py-16 text-sm text-muted-foreground">{t.noMatch}</p>
       ) : (
         <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map((p) => {
@@ -176,13 +235,15 @@ function Catalog() {
                       <span className="stencil text-lg font-medium text-clay">
                         {eur(Number(p.price_per_carton_eur))}
                       </span>
-                      <span className="text-xs text-muted-foreground">per carton</span>
+                      <span className="text-xs text-muted-foreground">{t.perCarton}</span>
                     </div>
                     <div className="mt-0.5 flex items-baseline justify-between text-xs text-muted-foreground">
-                      <span>{eur(Number(p.price_per_kg_eur))} / kg</span>
                       <span>
-                        {soloMoq} {p.packaging.includes("pack") ? "packs" : "crates"} if ordered
-                        alone
+                        {eur(Number(p.price_per_kg_eur))} {t.perKg}
+                      </span>
+                      <span>
+                        {soloMoq} {p.packaging.includes("pack") ? t.packs : t.crates}{" "}
+                        {t.ifOrderedAlone}
                       </span>
                     </div>
                     <Button
@@ -200,13 +261,13 @@ function Catalog() {
                         toast.success(`${p.name} added to your RFQ`);
                       }}
                     >
-                      Add to RFQ
+                      {t.addToRfq}
                     </Button>
                     <Link
                       to="/sample-request"
                       className="mt-2 block text-center text-xs text-muted-foreground underline underline-offset-4 hover:text-foreground"
                     >
-                      Request a sample of this line
+                      {t.sampleOfLine}
                     </Link>
                   </div>
                 </div>
@@ -217,11 +278,9 @@ function Catalog() {
       )}
 
       <div className="mt-14 flex flex-wrap items-center justify-between gap-4 border-t border-border pt-6">
-        <p className="text-sm text-muted-foreground">
-          Trade pricing is quote-based. Nothing is charged online.
-        </p>
+        <p className="text-sm text-muted-foreground">{t.footerNote}</p>
         <Link to="/rfq">
-          <Button variant="clay">Review RFQ cart</Button>
+          <Button variant="clay">{t.reviewCart}</Button>
         </Link>
       </div>
     </div>
@@ -230,11 +289,13 @@ function Catalog() {
 
 function SelectFilter({
   label,
+  allLabel,
   value,
   onChange,
   options,
 }: {
   label: string;
+  allLabel: string;
   value: string;
   onChange: (v: string) => void;
   options: string[];
@@ -247,7 +308,7 @@ function SelectFilter({
         onChange={(e) => onChange(e.target.value)}
         className="h-9 w-full rounded-md border border-input bg-background px-2 text-sm"
       >
-        <option value="all">All</option>
+        <option value="all">{allLabel}</option>
         {options.map((o) => (
           <option key={o} value={o}>
             {o}

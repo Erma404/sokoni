@@ -1,7 +1,9 @@
 import { statusLabel } from "@/lib/checkpoints";
+import { useLanguage } from "@/lib/language";
 import { cn } from "@/lib/utils";
 
 export function StatusBadge({ status }: { status: string }) {
+  const { lang } = useLanguage();
   return (
     <span
       className={cn(
@@ -13,7 +15,7 @@ export function StatusBadge({ status }: { status: string }) {
           "bg-secondary text-secondary-foreground",
       )}
     >
-      {statusLabel(status)}
+      {statusLabel(status, lang)}
     </span>
   );
 }

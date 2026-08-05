@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { stageByKey, type StageOwner } from "@/lib/checkpoints";
+import { useLanguage, type Lang } from "@/lib/language";
 
 type Point = {
   x: number;
@@ -9,10 +10,10 @@ type Point = {
 
 interface Milestone {
   key: string;
-  label: string;
-  blurb: string;
+  label: Record<Lang, string>;
+  blurb: Record<Lang, string>;
   owner: StageOwner;
-  fields: string[];
+  fields: Record<Lang, string[]>;
 }
 
 // Groups the 9 real tracking checkpoints (src/lib/checkpoints.ts — unchanged,
@@ -20,7 +21,12 @@ interface Milestone {
 // milestones so the homepage stepper stays readable. Owner reflects who holds
 // custody once each milestone completes; fields are the union of the
 // underlying checkpoints' tracked data fields.
-function milestone(key: string, label: string, blurb: string, stageKeys: string[]): Milestone {
+function milestone(
+  key: string,
+  label: Record<Lang, string>,
+  blurb: Record<Lang, string>,
+  stageKeys: string[],
+): Milestone {
   const stages = stageKeys
     .map((k) => stageByKey(k))
     .filter((s): s is NonNullable<typeof s> => Boolean(s));
@@ -29,30 +35,62 @@ function milestone(key: string, label: string, blurb: string, stageKeys: string[
     label,
     blurb,
     owner: stages[stages.length - 1]?.owner ?? "sokoni",
-    fields: stages.flatMap((s) => s.fields ?? []),
+    fields: {
+      fr: stages.flatMap((s) => s.fields?.fr ?? []),
+      en: stages.flatMap((s) => s.fields?.en ?? []),
+    },
   };
 }
 
 const MILESTONES: Milestone[] = [
-  milestone("farm", "Farm", "Lot allocated to a certified farm block.", ["farm"]),
-  milestone("harvested", "Harvested", "Picked at target dry matter.", ["harvested"]),
-  milestone("packed", "Packed & Inspected", "Graded, sized, packed and lab-cleared for export.", [
-    "packhouse",
-    "quality_control",
-  ]),
+  milestone(
+    "farm",
+    { fr: "Ferme", en: "Farm" },
+    {
+      fr: "Lot attribué à un bloc de ferme certifié.",
+      en: "Lot allocated to a certified farm block.",
+    },
+    ["farm"],
+  ),
+  milestone(
+    "harvested",
+    { fr: "Récolté", en: "Harvested" },
+    { fr: "Cueilli à la matière sèche cible.", en: "Picked at target dry matter." },
+    ["harvested"],
+  ),
+  milestone(
+    "packed",
+    { fr: "Conditionné & inspecté", en: "Packed & Inspected" },
+    {
+      fr: "Calibré, trié, emballé et validé en laboratoire pour l'export.",
+      en: "Graded, sized, packed and lab-cleared for export.",
+    },
+    ["packhouse", "quality_control"],
+  ),
   milestone(
     "cold_export",
-    "Cold Chain & Export",
-    "Pre-cooled at 5–6 °C, then cleared through Nairobi customs.",
+    { fr: "Chaîne du froid & export", en: "Cold Chain & Export" },
+    {
+      fr: "Pré-refroidi à 5–6 °C, puis dédouané à Nairobi.",
+      en: "Pre-cooled at 5–6 °C, then cleared through Nairobi customs.",
+    },
     ["cold_storage", "export_clearance"],
   ),
   milestone(
     "transit",
-    "In Transit & Arrival",
-    "Airfreight or reefer vessel, cleared on arrival at Rungis.",
+    { fr: "Transit & arrivée", en: "In Transit & Arrival" },
+    {
+      fr: "Fret aérien ou navire réfrigéré, dédouané à l'arrivée à Rungis.",
+      en: "Airfreight or reefer vessel, cleared on arrival at Rungis.",
+    },
     ["in_transit", "arrival_rungis"],
   ),
-  milestone("delivered", "Delivered", "Received by the buyer.", ["delivered"]),
+  milestone(
+    "delivered",
+    { fr: "Livré", en: "Delivered" },
+    { fr: "Reçu par l'acheteur.", en: "Received by the buyer." },
+    ["delivered"],
+  ),
 ];
 
 // Same single cubic-bezier S-curve as before, now sampled at 6 evenly spaced
@@ -68,9 +106,9 @@ const STAGE_POINTS: Point[] = [
 
 const ROUTE_PATH = "M 100 120 C 700 120 700 540 1300 540";
 
-const OWNER_LABEL: Record<StageOwner, string> = {
-  sokoni: "Sokoni",
-  forwarder: "Freight forwarder",
+const OWNER_LABEL: Record<StageOwner, Record<Lang, string>> = {
+  sokoni: { fr: "Sokoni", en: "Sokoni" },
+  forwarder: { fr: "Transitaire", en: "Freight forwarder" },
 };
 
 const BLURB_MAX_CHARS = 18;
@@ -100,6 +138,11 @@ function wrap(text: string, maxChars: number): string[] {
 
 export function RouteStepper() {
   const [activeKey, setActiveKey] = useState<string | null>(null);
+  const { lang } = useLanguage();
+  const srLabel =
+    lang === "fr"
+      ? "Parcours en 6 étapes, de la ferme à la livraison — sélectionnez une étape pour le détail"
+      : "6-milestone farm-to-delivery route, select a milestone for details";
 
   return (
     <div className="relative mt-14">
@@ -108,7 +151,7 @@ export function RouteStepper() {
         viewBox="0 0 1400 680"
         className="hidden w-full overflow-visible md:block"
         role="img"
-        aria-label="6-milestone farm-to-delivery route, select a milestone for details"
+        aria-label={srLabel}
       >
         <defs>
           <marker
@@ -161,14 +204,17 @@ export function RouteStepper() {
           if (!p) return null;
           const isActive = activeKey === stage.key;
           const labelAbove = p.side === "top";
-          const blurbLines = wrap(stage.blurb, BLURB_MAX_CHARS);
+          const label = stage.label[lang];
+          const blurb = stage.blurb[lang];
+          const fields = stage.fields[lang];
+          const blurbLines = wrap(blurb, BLURB_MAX_CHARS);
           const labelHeight = TITLE_LINE + 4 + blurbLines.length * BLURB_LINE;
           const titleY = labelAbove ? p.y - GAP - labelHeight : p.y + GAP;
           const blurbY = titleY + TITLE_LINE + 4;
           const blurbBottomY = blurbY + (blurbLines.length - 1) * BLURB_LINE;
 
           const panelWidth = 176;
-          const panelHeight = 30 + (stage.fields?.length ?? 0) * 16;
+          const panelHeight = 30 + fields.length * 16;
           const panelX = p.x - panelWidth / 2;
           const panelY = labelAbove ? titleY - 10 - panelHeight : blurbBottomY + 18;
 
@@ -183,7 +229,7 @@ export function RouteStepper() {
                 role="button"
                 tabIndex={0}
                 aria-pressed={isActive}
-                aria-label={`${stage.label}. ${stage.blurb}`}
+                aria-label={`${label}. ${blurb}`}
                 className="cursor-pointer outline-none"
                 onMouseEnter={activate}
                 onMouseLeave={deactivate}
@@ -244,7 +290,7 @@ export function RouteStepper() {
                 strokeLinejoin="round"
                 style={{ fontFamily: "var(--font-display)", fontSize: TITLE_SIZE }}
               >
-                {stage.label}
+                {label}
               </text>
 
               {/* Blurb label (multi-line) */}
@@ -278,11 +324,11 @@ export function RouteStepper() {
                 >
                   <div className="rounded-lg border border-clay/40 bg-card px-3 py-2 text-center shadow-lg">
                     <span className="stencil inline-block rounded-full bg-secondary px-2 py-0.5 text-[10px] font-medium text-primary">
-                      {OWNER_LABEL[stage.owner]}
+                      {OWNER_LABEL[stage.owner][lang]}
                     </span>
-                    {stage.fields && stage.fields.length > 0 && (
+                    {fields.length > 0 && (
                       <ul className="mt-1.5 space-y-0.5 text-left text-[11px] leading-tight text-muted-foreground">
-                        {stage.fields.map((f) => (
+                        {fields.map((f) => (
                           <li key={f} className="flex items-start gap-1">
                             <span
                               aria-hidden
@@ -304,10 +350,11 @@ export function RouteStepper() {
       {/* Mobile: vertical stacked stepper */}
       <ol className="relative space-y-6 md:hidden">
         <span aria-hidden className="absolute left-5 top-2 h-[calc(100%-1rem)] w-px bg-border" />
-        {MILESTONES.map((s, i) => {
-          const isActive = activeKey === s.key;
+        {MILESTONES.map((stage, i) => {
+          const isActive = activeKey === stage.key;
+          const fields = stage.fields[lang];
           return (
-            <li key={s.key} className="relative flex gap-4 pr-2">
+            <li key={stage.key} className="relative flex gap-4 pr-2">
               <div className="flex flex-col items-center">
                 <span className="flex size-10 shrink-0 items-center justify-center rounded-full border border-clay/35 bg-card text-xs font-medium text-clay">
                   {String(i + 1).padStart(2, "0")}
@@ -319,19 +366,19 @@ export function RouteStepper() {
               <button
                 type="button"
                 aria-expanded={isActive}
-                onClick={() => setActiveKey((k) => (k === s.key ? null : s.key))}
+                onClick={() => setActiveKey((k) => (k === stage.key ? null : stage.key))}
                 className="pb-1 text-left"
               >
-                <div className="stencil text-sm font-medium text-primary">{s.label}</div>
-                <p className="mt-1 text-base text-muted-foreground">{s.blurb}</p>
+                <div className="stencil text-sm font-medium text-primary">{stage.label[lang]}</div>
+                <p className="mt-1 text-base text-muted-foreground">{stage.blurb[lang]}</p>
                 {isActive && (
                   <div className="mt-2 rounded-lg border border-clay/40 bg-card px-3 py-2">
                     <span className="stencil inline-block rounded-full bg-secondary px-2 py-0.5 text-[10px] font-medium text-primary">
-                      {OWNER_LABEL[s.owner]}
+                      {OWNER_LABEL[stage.owner][lang]}
                     </span>
-                    {s.fields && s.fields.length > 0 && (
+                    {fields.length > 0 && (
                       <ul className="mt-1.5 space-y-0.5 text-left text-xs leading-tight text-muted-foreground">
-                        {s.fields.map((f) => (
+                        {fields.map((f) => (
                           <li key={f} className="flex items-start gap-1">
                             <span
                               aria-hidden

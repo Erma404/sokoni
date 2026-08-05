@@ -4,21 +4,22 @@ import { useServerFn } from "@tanstack/react-start";
 import { seedDemoData, type DemoSeedResult } from "@/lib/demo.functions";
 import { Button } from "@/components/ui/button";
 import { statusLabel } from "@/lib/checkpoints";
+import { useLanguage } from "@/lib/language";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/demo")({
   head: () => ({
     meta: [
-      { title: "Demo access — Sokoni Export" },
+      { title: "Accès démo — Sokoni Export" },
       {
         name: "description",
         content:
-          "Demo accounts and tracking codes to explore the Sokoni Export buyer dashboard, admin back-office and forwarder portal.",
+          "Comptes de démonstration et codes de suivi pour explorer le tableau de bord acheteur, le back-office Sokoni et le portail transitaire.",
       },
-      { property: "og:title", content: "Demo access — Sokoni Export" },
+      { property: "og:title", content: "Accès démo — Sokoni Export" },
       {
         property: "og:description",
-        content: "Test accounts, tracking codes and forwarder links for Sokoni Export.",
+        content: "Comptes de test, codes de suivi et liens transitaire pour Sokoni Export.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -46,6 +47,7 @@ function Field({ label, value }: { label: string; value: string }) {
 }
 
 function Demo() {
+  const { lang } = useLanguage();
   const seed = useServerFn(seedDemoData);
   const [data, setData] = useState<DemoSeedResult | null>(null);
   const [loading, setLoading] = useState(false);
@@ -67,8 +69,8 @@ function Demo() {
       <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">Sandbox</p>
       <h1 className="stencil mt-3 text-4xl font-medium md:text-5xl">Accès démo</h1>
       <p className="mt-4 max-w-2xl text-muted-foreground">
-        Génère des comptes et des expéditions de démonstration pour tester les trois
-        environnements : espace acheteur, back-office Sokoni et portail transitaire.
+        Génère des comptes et des expéditions de démonstration pour tester les trois environnements
+        : espace acheteur, back-office Sokoni et portail transitaire.
       </p>
 
       <Button className="mt-6" onClick={run} disabled={loading}>
@@ -103,11 +105,14 @@ function Demo() {
             <h2 className="stencil text-2xl font-medium">Expéditions de démo</h2>
             <div className="mt-4 space-y-4">
               {data.orders.map((o) => (
-                <div key={o.tracking_code} className="rounded-2xl border border-border bg-card/60 p-5">
+                <div
+                  key={o.tracking_code}
+                  className="rounded-2xl border border-border bg-card/60 p-5"
+                >
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <p className="font-mono text-sm">{o.tracking_code}</p>
                     <span className="rounded-full bg-secondary px-3 py-1 text-xs">
-                      {statusLabel(o.status)}
+                      {statusLabel(o.status, lang)}
                     </span>
                   </div>
                   <p className="mt-1 text-sm text-muted-foreground">{o.product_summary}</p>

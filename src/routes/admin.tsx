@@ -6,6 +6,7 @@ import { Copy } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/lib/app-context";
 import { STAGES, stageIndex } from "@/lib/checkpoints";
+import { useLanguage, useT } from "@/lib/language";
 import { StatusBadge } from "@/components/tracking/StatusBadge";
 import { shortDate } from "@/lib/format";
 import { Button } from "@/components/ui/button";
@@ -17,18 +18,94 @@ import { PdfLogoSettings } from "@/components/admin/PdfLogoSettings";
 export const Route = createFileRoute("/admin")({
   head: () => ({
     meta: [
-      { title: "Back Office — Sokoni Export" },
+      { title: "Back office — Sokoni Export" },
       {
         name: "description",
-        content: "Internal Sokoni Export back office: create orders and log tracking checkpoints.",
+        content:
+          "Back office interne Sokoni Export : créer des commandes et enregistrer les étapes de suivi.",
       },
-      { property: "og:title", content: "Back Office — Sokoni Export" },
-      { property: "og:description", content: "Internal order and checkpoint management." },
+      { property: "og:title", content: "Back office — Sokoni Export" },
+      { property: "og:description", content: "Gestion interne des commandes et étapes de suivi." },
       { name: "robots", content: "noindex" },
     ],
   }),
   component: Admin,
 });
+
+const COPY = {
+  fr: {
+    loading: "Chargement…",
+    signInRequired: "Connectez-vous avec un compte de l'équipe Sokoni pour ouvrir le back office.",
+    restricted: "Cette zone est réservée à l'équipe Sokoni.",
+    internal: "Interne",
+    backOffice: "Back office",
+    pdfLogo: "Logo des documents PDF",
+    newOrder: "Nouvelle commande",
+    orders: "Commandes",
+    copyForwarderLink: "Copier le lien transitaire",
+    forwarderLinkCopied: "Lien transitaire copié",
+    cartons: "cartons",
+    trackingCode: "Code de suivi",
+    buyerCompany: "Entreprise acheteuse",
+    productSummary: "Résumé produit",
+    productSummaryPlaceholder: "Avocat Hass · calibre 16 · caisse 4 kg",
+    cartonsLabel: "Cartons",
+    netKg: "Kg net",
+    incoterm: "Incoterm",
+    originFarm: "Ferme d'origine",
+    destination: "Destination",
+    creating: "Création…",
+    createOrder: "Créer la commande",
+    orderCreated: "Commande créée",
+    checkpoint: "Étape",
+    dateTime: "Date & heure",
+    location: "Lieu",
+    reference: "Référence",
+    tempC: "Temp °C",
+    documentLabel: "Libellé du document",
+    documentUrl: "URL du document",
+    notes: "Notes",
+    logging: "Enregistrement…",
+    logCheckpoint: "Enregistrer l'étape",
+    checkpointLogged: "Étape enregistrée — la timeline de l'acheteur est mise à jour",
+  },
+  en: {
+    loading: "Loading…",
+    signInRequired: "Sign in with a Sokoni team account to open the back office.",
+    restricted: "This area is restricted to the Sokoni team.",
+    internal: "Internal",
+    backOffice: "Back office",
+    pdfLogo: "PDF document logo",
+    newOrder: "New order",
+    orders: "Orders",
+    copyForwarderLink: "Copy forwarder link",
+    forwarderLinkCopied: "Forwarder link copied",
+    cartons: "cartons",
+    trackingCode: "Tracking code",
+    buyerCompany: "Buyer company",
+    productSummary: "Product summary",
+    productSummaryPlaceholder: "Hass avocado · caliber 16 · 4 kg crate",
+    cartonsLabel: "Cartons",
+    netKg: "Net kg",
+    incoterm: "Incoterm",
+    originFarm: "Origin farm",
+    destination: "Destination",
+    creating: "Creating…",
+    createOrder: "Create order",
+    orderCreated: "Order created",
+    checkpoint: "Checkpoint",
+    dateTime: "Date & time",
+    location: "Location",
+    reference: "Reference",
+    tempC: "Temp °C",
+    documentLabel: "Document label",
+    documentUrl: "Document URL",
+    notes: "Notes",
+    logging: "Logging…",
+    logCheckpoint: "Log checkpoint",
+    checkpointLogged: "Checkpoint logged — buyer timeline updated",
+  },
+};
 
 interface AdminOrder {
   id: string;
@@ -48,6 +125,7 @@ function Admin() {
   const { isAdmin, loading, user } = useSession();
   const queryClient = useQueryClient();
   const [selected, setSelected] = useState<string | null>(null);
+  const t = useT(COPY);
 
   const { data: orders = [] } = useQuery({
     queryKey: ["admin-orders"],
@@ -75,30 +153,28 @@ function Admin() {
     };
   }, [isAdmin, queryClient]);
 
-  if (loading) return <Note>Loading…</Note>;
-  if (!user) return <Note>Sign in with a Sokoni team account to open the back office.</Note>;
-  if (!isAdmin) return <Note>This area is restricted to the Sokoni team.</Note>;
-
-  const active = orders.find((o) => o.id === selected) ?? null;
+  if (loading) return <Note>{t.loading}</Note>;
+  if (!user) return <Note>{t.signInRequired}</Note>;
+  if (!isAdmin) return <Note>{t.restricted}</Note>;
 
   return (
     <div className="mx-auto max-w-6xl px-5 py-14">
-      <p className="eyebrow">Internal</p>
-      <h1 className="stencil mt-3 text-3xl font-medium text-primary sm:text-4xl">Back office</h1>
+      <p className="eyebrow">{t.internal}</p>
+      <h1 className="stencil mt-3 text-3xl font-medium text-primary sm:text-4xl">{t.backOffice}</h1>
 
       <div className="mt-10 grid gap-12 lg:grid-cols-[1fr_1fr]">
         <section>
-          <h2 className="eyebrow mb-4">Logo des documents PDF</h2>
+          <h2 className="eyebrow mb-4">{t.pdfLogo}</h2>
           <PdfLogoSettings />
 
-          <h2 className="eyebrow mb-4 mt-10">New order</h2>
+          <h2 className="eyebrow mb-4 mt-10">{t.newOrder}</h2>
           <NewOrderForm
             onCreated={() => queryClient.invalidateQueries({ queryKey: ["admin-orders"] })}
           />
         </section>
 
         <section>
-          <h2 className="eyebrow mb-4">Orders</h2>
+          <h2 className="eyebrow mb-4">{t.orders}</h2>
           <ul className="divide-y divide-border border-y border-border">
             {orders.map((o) => (
               <li key={o.id} className="py-4">
@@ -112,7 +188,8 @@ function Admin() {
                   <StatusBadge status={o.status} />
                 </div>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  {o.buyer_company ?? "—"} · {o.quantity_cartons} cartons · {shortDate(o.created_at)}
+                  {o.buyer_company ?? "—"} · {o.quantity_cartons} {t.cartons} ·{" "}
+                  {shortDate(o.created_at)}
                 </p>
                 <button
                   className="mt-1 inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-clay"
@@ -120,10 +197,10 @@ function Admin() {
                     void navigator.clipboard.writeText(
                       `${window.location.origin}/forwarder/${o.forwarder_token}`,
                     );
-                    toast.success("Forwarder link copied");
+                    toast.success(t.forwarderLinkCopied);
                   }}
                 >
-                  <Copy className="size-3" /> Copy forwarder link
+                  <Copy className="size-3" /> {t.copyForwarderLink}
                 </button>
 
                 {selected === o.id && <CheckpointForm order={o} />}
@@ -137,11 +214,14 @@ function Admin() {
 }
 
 function Note({ children }: { children: React.ReactNode }) {
-  return <p className="mx-auto max-w-2xl px-5 py-28 text-center text-muted-foreground">{children}</p>;
+  return (
+    <p className="mx-auto max-w-2xl px-5 py-28 text-center text-muted-foreground">{children}</p>
+  );
 }
 
 function NewOrderForm({ onCreated }: { onCreated: () => void }) {
   const [busy, setBusy] = useState(false);
+  const t = useT(COPY);
   const [f, setF] = useState({
     tracking_code: "",
     buyer_company: "",
@@ -172,14 +252,14 @@ function NewOrderForm({ onCreated }: { onCreated: () => void }) {
       toast.error(error.message);
       return;
     }
-    toast.success("Order created");
+    toast.success(t.orderCreated);
     setF({ ...f, tracking_code: "", product_summary: "" });
     onCreated();
   }
 
   return (
     <form className="space-y-4" onSubmit={submit}>
-      <Row label="Tracking code">
+      <Row label={t.trackingCode}>
         <Input
           required
           maxLength={40}
@@ -188,24 +268,24 @@ function NewOrderForm({ onCreated }: { onCreated: () => void }) {
           onChange={(e) => setF({ ...f, tracking_code: e.target.value })}
         />
       </Row>
-      <Row label="Buyer company">
+      <Row label={t.buyerCompany}>
         <Input
           maxLength={120}
           value={f.buyer_company}
           onChange={(e) => setF({ ...f, buyer_company: e.target.value })}
         />
       </Row>
-      <Row label="Product summary">
+      <Row label={t.productSummary}>
         <Input
           required
           maxLength={200}
-          placeholder="Hass avocado · caliber 16 · 4 kg crate"
+          placeholder={t.productSummaryPlaceholder}
           value={f.product_summary}
           onChange={(e) => setF({ ...f, product_summary: e.target.value })}
         />
       </Row>
       <div className="grid grid-cols-2 gap-4">
-        <Row label="Cartons">
+        <Row label={t.cartonsLabel}>
           <Input
             type="number"
             min={1}
@@ -213,7 +293,7 @@ function NewOrderForm({ onCreated }: { onCreated: () => void }) {
             onChange={(e) => setF({ ...f, quantity_cartons: Number(e.target.value) })}
           />
         </Row>
-        <Row label="Net kg">
+        <Row label={t.netKg}>
           <Input
             type="number"
             min={1}
@@ -223,7 +303,7 @@ function NewOrderForm({ onCreated }: { onCreated: () => void }) {
         </Row>
       </div>
       <div className="grid grid-cols-2 gap-4">
-        <Row label="Incoterm">
+        <Row label={t.incoterm}>
           <select
             value={f.incoterm}
             onChange={(e) => setF({ ...f, incoterm: e.target.value })}
@@ -234,7 +314,7 @@ function NewOrderForm({ onCreated }: { onCreated: () => void }) {
             <option>FOB</option>
           </select>
         </Row>
-        <Row label="Origin farm">
+        <Row label={t.originFarm}>
           <Input
             maxLength={120}
             value={f.origin_farm}
@@ -242,7 +322,7 @@ function NewOrderForm({ onCreated }: { onCreated: () => void }) {
           />
         </Row>
       </div>
-      <Row label="Destination">
+      <Row label={t.destination}>
         <Input
           maxLength={120}
           value={f.destination}
@@ -250,7 +330,7 @@ function NewOrderForm({ onCreated }: { onCreated: () => void }) {
         />
       </Row>
       <Button type="submit" variant="clay" disabled={busy} className="w-full">
-        {busy ? "Creating…" : "Create order"}
+        {busy ? t.creating : t.createOrder}
       </Button>
     </form>
   );
@@ -258,6 +338,8 @@ function NewOrderForm({ onCreated }: { onCreated: () => void }) {
 
 function CheckpointForm({ order }: { order: AdminOrder }) {
   const [busy, setBusy] = useState(false);
+  const { lang } = useLanguage();
+  const t = useT(COPY);
   const [e, setE] = useState({
     checkpoint: STAGES[0]!.key,
     occurred_at: new Date().toISOString().slice(0, 16),
@@ -300,13 +382,13 @@ function CheckpointForm({ order }: { order: AdminOrder }) {
       toast.error(error.message);
       return;
     }
-    toast.success("Checkpoint logged — buyer timeline updated");
+    toast.success(t.checkpointLogged);
     setE({ ...e, reference: "", notes: "", document_label: "", document_url: "" });
   }
 
   return (
     <form className="mt-4 space-y-3 border border-border bg-card p-4" onSubmit={submit}>
-      <Row label="Checkpoint">
+      <Row label={t.checkpoint}>
         <select
           value={e.checkpoint}
           onChange={(ev) => setE({ ...e, checkpoint: ev.target.value })}
@@ -314,20 +396,20 @@ function CheckpointForm({ order }: { order: AdminOrder }) {
         >
           {STAGES.map((s) => (
             <option key={s.key} value={s.key}>
-              {s.label}
+              {s.label[lang]}
             </option>
           ))}
         </select>
       </Row>
       <div className="grid grid-cols-2 gap-3">
-        <Row label="Date & time">
+        <Row label={t.dateTime}>
           <Input
             type="datetime-local"
             value={e.occurred_at}
             onChange={(ev) => setE({ ...e, occurred_at: ev.target.value })}
           />
         </Row>
-        <Row label="Location">
+        <Row label={t.location}>
           <Input
             maxLength={120}
             value={e.location}
@@ -336,14 +418,14 @@ function CheckpointForm({ order }: { order: AdminOrder }) {
         </Row>
       </div>
       <div className="grid grid-cols-2 gap-3">
-        <Row label="Reference">
+        <Row label={t.reference}>
           <Input
             maxLength={120}
             value={e.reference}
             onChange={(ev) => setE({ ...e, reference: ev.target.value })}
           />
         </Row>
-        <Row label="Temp °C">
+        <Row label={t.tempC}>
           <Input
             type="number"
             step="0.1"
@@ -353,14 +435,14 @@ function CheckpointForm({ order }: { order: AdminOrder }) {
         </Row>
       </div>
       <div className="grid grid-cols-2 gap-3">
-        <Row label="Document label">
+        <Row label={t.documentLabel}>
           <Input
             maxLength={120}
             value={e.document_label}
             onChange={(ev) => setE({ ...e, document_label: ev.target.value })}
           />
         </Row>
-        <Row label="Document URL">
+        <Row label={t.documentUrl}>
           <Input
             type="url"
             maxLength={600}
@@ -369,7 +451,7 @@ function CheckpointForm({ order }: { order: AdminOrder }) {
           />
         </Row>
       </div>
-      <Row label="Notes">
+      <Row label={t.notes}>
         <Textarea
           rows={2}
           maxLength={600}
@@ -378,7 +460,7 @@ function CheckpointForm({ order }: { order: AdminOrder }) {
         />
       </Row>
       <Button type="submit" size="sm" disabled={busy}>
-        {busy ? "Logging…" : "Log checkpoint"}
+        {busy ? t.logging : t.logCheckpoint}
       </Button>
     </form>
   );

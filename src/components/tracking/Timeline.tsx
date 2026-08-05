@@ -1,6 +1,7 @@
 import { Check, Circle, FileText, Loader2 } from "lucide-react";
 import { STAGES, stageIndex } from "@/lib/checkpoints";
 import { dateTime } from "@/lib/format";
+import { useLanguage, useT } from "@/lib/language";
 import { cn } from "@/lib/utils";
 
 export interface TrackingEvent {
@@ -17,6 +18,27 @@ export interface TrackingEvent {
   document_label: string | null;
 }
 
+const COPY = {
+  fr: {
+    pending: "En attente",
+    location: "Lieu",
+    ref: "Réf",
+    temp: "Temp",
+    attachedDocument: "Document joint",
+    noDocuments: "Les documents sont joints à la commande au fur et à mesure des étapes.",
+    document: "Document",
+  },
+  en: {
+    pending: "Pending",
+    location: "Location",
+    ref: "Ref",
+    temp: "Temp",
+    attachedDocument: "Attached document",
+    noDocuments: "Documents are attached to the shipment as each checkpoint is cleared.",
+    document: "Document",
+  },
+};
+
 export function currentStage(events: TrackingEvent[]): number {
   if (!events.length) return -1;
   return Math.max(...events.map((e) => e.stage_index));
@@ -24,6 +46,8 @@ export function currentStage(events: TrackingEvent[]): number {
 
 export function Timeline({ events }: { events: TrackingEvent[] }) {
   const reached = currentStage(events);
+  const { lang } = useLanguage();
+  const t = useT(COPY);
 
   return (
     <ol className="relative">
@@ -45,9 +69,7 @@ export function Timeline({ events }: { events: TrackingEvent[] }) {
               >
                 <path
                   d="M12 0C12 30 22 40 12 60C2 80 12 88 12 100"
-                  stroke={
-                    done && i < reached ? "var(--color-primary)" : "var(--color-border)"
-                  }
+                  stroke={done && i < reached ? "var(--color-primary)" : "var(--color-border)"}
                   strokeWidth="1.5"
                   strokeLinecap="round"
                 />
@@ -74,7 +96,6 @@ export function Timeline({ events }: { events: TrackingEvent[] }) {
               )}
             </span>
 
-
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-baseline justify-between gap-x-4">
                 <h3
@@ -83,32 +104,34 @@ export function Timeline({ events }: { events: TrackingEvent[] }) {
                     done ? "text-foreground" : "text-muted-foreground",
                   )}
                 >
-                  {stage.label}
+                  {stage.label[lang]}
                 </h3>
                 <span className="text-xs tabular-nums text-muted-foreground">
-                  {event ? dateTime(event.occurred_at) : "Pending"}
+                  {event ? dateTime(event.occurred_at) : t.pending}
                 </span>
               </div>
 
-              <p className="mt-1 text-sm text-muted-foreground">{event?.notes || stage.blurb}</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {event?.notes || stage.blurb[lang]}
+              </p>
 
               {event && (
                 <dl className="mt-2 flex flex-wrap gap-x-6 gap-y-1 text-xs text-muted-foreground">
                   {event.location && (
                     <div>
-                      <dt className="inline eyebrow">Location </dt>
+                      <dt className="inline eyebrow">{t.location} </dt>
                       <dd className="inline text-foreground">{event.location}</dd>
                     </div>
                   )}
                   {event.reference && (
                     <div>
-                      <dt className="inline eyebrow">Ref </dt>
+                      <dt className="inline eyebrow">{t.ref} </dt>
                       <dd className="inline font-mono text-foreground">{event.reference}</dd>
                     </div>
                   )}
                   {event.temperature_c !== null && event.temperature_c !== undefined && (
                     <div>
-                      <dt className="inline eyebrow">Temp </dt>
+                      <dt className="inline eyebrow">{t.temp} </dt>
                       <dd className="inline text-foreground">{event.temperature_c} °C</dd>
                     </div>
                   )}
@@ -123,7 +146,7 @@ export function Timeline({ events }: { events: TrackingEvent[] }) {
                   className="mt-3 inline-flex items-center gap-2 rounded-sm border border-border bg-card px-3 py-1.5 text-xs text-foreground transition-colors hover:border-primary"
                 >
                   <FileText className="size-3.5" />
-                  {event.document_label || "Attached document"}
+                  {event.document_label || t.attachedDocument}
                 </a>
               )}
             </div>
@@ -136,12 +159,10 @@ export function Timeline({ events }: { events: TrackingEvent[] }) {
 
 export function DocumentList({ events }: { events: TrackingEvent[] }) {
   const docs = events.filter((e) => e.document_url);
+  const { lang } = useLanguage();
+  const t = useT(COPY);
   if (!docs.length) {
-    return (
-      <p className="text-sm text-muted-foreground">
-        Documents are attached to the shipment as each checkpoint is cleared.
-      </p>
-    );
+    return <p className="text-sm text-muted-foreground">{t.noDocuments}</p>;
   }
   return (
     <ul className="divide-y divide-border">
@@ -155,9 +176,9 @@ export function DocumentList({ events }: { events: TrackingEvent[] }) {
           >
             <span className="flex items-center gap-2">
               <FileText className="size-4 shrink-0 text-muted-foreground" />
-              {d.document_label || "Document"}
+              {d.document_label || t.document}
             </span>
-            <span className="text-xs text-muted-foreground">{stageLabel(d.checkpoint)}</span>
+            <span className="text-xs text-muted-foreground">{stageLabel(d.checkpoint, lang)}</span>
           </a>
         </li>
       ))}
@@ -165,8 +186,8 @@ export function DocumentList({ events }: { events: TrackingEvent[] }) {
   );
 }
 
-function stageLabel(key: string) {
-  return STAGES[stageIndex(key)]?.label ?? key;
+function stageLabel(key: string, lang: "fr" | "en") {
+  return STAGES[stageIndex(key)]?.label[lang] ?? key;
 }
 
 export function RouteMap({ progress }: { progress: number }) {
@@ -181,7 +202,12 @@ export function RouteMap({ progress }: { progress: number }) {
   };
 
   return (
-    <svg viewBox="0 0 360 230" className="h-auto w-full" role="img" aria-label="Shipping route from Kenya to Rungis, Paris">
+    <svg
+      viewBox="0 0 360 230"
+      className="h-auto w-full"
+      role="img"
+      aria-label="Shipping route from Kenya to Rungis, Paris"
+    >
       <rect x="0" y="0" width="360" height="230" fill="var(--color-secondary)" rx="16" />
       <path
         d={`M ${from.x} ${from.y} Q ${ctrl.x} ${ctrl.y} ${to.x} ${to.y}`}

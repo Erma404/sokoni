@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { ArrowUpRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/lib/app-context";
+import { useT } from "@/lib/language";
 import { StatusBadge } from "@/components/tracking/StatusBadge";
 import { shortDate } from "@/lib/format";
 import { Button } from "@/components/ui/button";
@@ -11,19 +12,52 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
     meta: [
-      { title: "Buyer Dashboard — Sokoni Export" },
+      { title: "Tableau de bord acheteur — Sokoni Export" },
       {
         name: "description",
         content:
-          "All your Sokoni Export shipments in one place: active orders, live status, past deliveries and downloadable trade documents.",
+          "Toutes vos commandes Sokoni Export au même endroit : commandes actives, statut en direct, livraisons passées et documents commerciaux téléchargeables.",
       },
-      { property: "og:title", content: "Buyer Dashboard — Sokoni Export" },
-      { property: "og:description", content: "Your active and past avocado shipments." },
+      { property: "og:title", content: "Tableau de bord acheteur — Sokoni Export" },
+      { property: "og:description", content: "Vos commandes d'avocat actives et passées." },
       { name: "robots", content: "noindex" },
     ],
   }),
   component: Dashboard,
 });
+
+const COPY = {
+  fr: {
+    loading: "Chargement…",
+    signInRequired: "Connexion requise",
+    signInBody: "Votre tableau de bord liste chaque commande active et passée de votre entreprise.",
+    signIn: "Se connecter",
+    buyerPortal: "Portail acheteur",
+    yourShipments: "Vos commandes",
+    loadingOrders: "Chargement des commandes…",
+    noOrders: "Aucune commande liée à ce compte pour le moment.",
+    startRfq: "Démarrer un devis",
+    active: "Actives",
+    delivered: "Livrées",
+    cartons: "cartons",
+    track: "Suivre",
+  },
+  en: {
+    loading: "Loading…",
+    signInRequired: "Sign in required",
+    signInBody: "Your dashboard lists every active and past shipment for your company.",
+    signIn: "Sign in",
+    buyerPortal: "Buyer portal",
+    yourShipments: "Your shipments",
+    loadingOrders: "Loading orders…",
+    noOrders: "No orders linked to this account yet.",
+    startRfq: "Start an RFQ",
+    active: "Active",
+    delivered: "Delivered",
+    cartons: "cartons",
+    track: "Track",
+  },
+};
 
 interface OrderRow {
   id: string;
@@ -39,6 +73,7 @@ interface OrderRow {
 function Dashboard() {
   const { user, loading } = useSession();
   const queryClient = useQueryClient();
+  const t = useT(COPY);
 
   const { data: orders = [], isLoading } = useQuery({
     queryKey: ["my-orders", user?.id],
@@ -68,17 +103,18 @@ function Dashboard() {
     };
   }, [user, queryClient]);
 
-  if (loading) return <p className="mx-auto max-w-5xl px-5 py-24 text-sm text-muted-foreground">Loading…</p>;
+  if (loading)
+    return (
+      <p className="mx-auto max-w-5xl px-5 py-24 text-sm text-muted-foreground">{t.loading}</p>
+    );
 
   if (!user) {
     return (
       <div className="mx-auto max-w-2xl px-5 py-28 text-center">
-        <h1 className="stencil text-2xl font-medium text-primary">Sign in required</h1>
-        <p className="mt-3 text-muted-foreground">
-          Your dashboard lists every active and past shipment for your company.
-        </p>
+        <h1 className="stencil text-2xl font-medium text-primary">{t.signInRequired}</h1>
+        <p className="mt-3 text-muted-foreground">{t.signInBody}</p>
         <Link to="/auth" className="mt-6 inline-block">
-          <Button variant="clay">Sign in</Button>
+          <Button variant="clay">{t.signIn}</Button>
         </Link>
       </div>
     );
@@ -89,30 +125,52 @@ function Dashboard() {
 
   return (
     <div className="mx-auto max-w-5xl px-5 py-14">
-      <p className="eyebrow">Buyer portal</p>
-      <h1 className="stencil mt-3 text-3xl font-medium text-primary sm:text-4xl">Your shipments</h1>
+      <p className="eyebrow">{t.buyerPortal}</p>
+      <h1 className="stencil mt-3 text-3xl font-medium text-primary sm:text-4xl">
+        {t.yourShipments}
+      </h1>
 
       {isLoading ? (
-        <p className="py-16 text-sm text-muted-foreground">Loading orders…</p>
+        <p className="py-16 text-sm text-muted-foreground">{t.loadingOrders}</p>
       ) : orders.length === 0 ? (
         <div className="mt-10 border border-dashed border-border p-12 text-center text-sm text-muted-foreground">
-          No orders linked to this account yet.{" "}
+          {t.noOrders}{" "}
           <Link to="/catalog" className="text-clay underline underline-offset-4">
-            Start an RFQ
+            {t.startRfq}
           </Link>
           .
         </div>
       ) : (
         <div className="mt-10 space-y-12">
-          <OrderGroup title="Active" orders={active} />
-          <OrderGroup title="Delivered" orders={past} />
+          <OrderGroup
+            title={t.active}
+            cartonsLabel={t.cartons}
+            trackLabel={t.track}
+            orders={active}
+          />
+          <OrderGroup
+            title={t.delivered}
+            cartonsLabel={t.cartons}
+            trackLabel={t.track}
+            orders={past}
+          />
         </div>
       )}
     </div>
   );
 }
 
-function OrderGroup({ title, orders }: { title: string; orders: OrderRow[] }) {
+function OrderGroup({
+  title,
+  cartonsLabel,
+  trackLabel,
+  orders,
+}: {
+  title: string;
+  cartonsLabel: string;
+  trackLabel: string;
+  orders: OrderRow[];
+}) {
   if (!orders.length) return null;
   return (
     <section>
@@ -124,14 +182,14 @@ function OrderGroup({ title, orders }: { title: string; orders: OrderRow[] }) {
               <div className="stencil text-sm font-medium">{o.tracking_code}</div>
               <div className="mt-1 text-sm text-muted-foreground">{o.product_summary}</div>
               <div className="mt-1 text-xs text-muted-foreground">
-                {o.quantity_cartons} cartons · {o.incoterm} · {o.destination} ·{" "}
+                {o.quantity_cartons} {cartonsLabel} · {o.incoterm} · {o.destination} ·{" "}
                 {shortDate(o.created_at)}
               </div>
             </div>
             <StatusBadge status={o.status} />
             <Link to="/track/$code" params={{ code: o.tracking_code }}>
               <Button variant="outline" size="sm">
-                Track
+                {trackLabel}
                 <ArrowUpRight className="size-3.5" />
               </Button>
             </Link>

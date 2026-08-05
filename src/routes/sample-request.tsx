@@ -4,6 +4,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/lib/app-context";
+import { useT } from "@/lib/language";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -13,21 +14,77 @@ import { Checkbox } from "@/components/ui/checkbox";
 export const Route = createFileRoute("/sample-request")({
   head: () => ({
     meta: [
-      { title: "Request a Sample — Sokoni Export" },
+      { title: "Demander un échantillon — Sokoni Export" },
       {
         name: "description",
         content:
-          "Request a Hass avocado sample kit for buyer evaluation. No minimum order — one kit per request, reviewed by our trade desk.",
+          "Demandez un kit d'échantillon d'avocat Hass pour évaluation. Pas de minimum de commande — un kit par demande, examiné par notre bureau commercial.",
       },
-      { property: "og:title", content: "Request a Sample — Sokoni Export" },
+      { property: "og:title", content: "Demander un échantillon — Sokoni Export" },
       {
         property: "og:description",
-        content: "One sample kit per request, no MOQ. Our team reviews every request by hand.",
+        content:
+          "Un kit d'échantillon par demande, sans MOQ. Notre équipe examine chaque demande manuellement.",
       },
     ],
   }),
   component: SampleRequestPage,
 });
+
+const COPY = {
+  fr: {
+    selectProduct: "Sélectionnez au moins un produit à échantillonner",
+    received: "Demande reçue",
+    thankYou: "Merci",
+    thankYouBody:
+      "Notre équipe examine chaque demande d'échantillon à la main et revient vers vous rapidement pour confirmer les détails d'expédition. Un kit par demande — aucun minimum de commande ne s'applique.",
+    backToCatalog: "Retour au catalogue",
+    buyerEvaluation: "Évaluation acheteur",
+    title: "Demander un échantillon",
+    intro:
+      "Un kit d'échantillon par demande, sans minimum de commande — c'est un flux séparé du panier de devis tarifé. Dites-nous quelles lignes vous souhaitez évaluer et notre équipe examine la demande à la main.",
+    productsOfInterest: "Produit(s) d'intérêt",
+    contactName: "Nom du contact",
+    company: "Entreprise",
+    email: "Email",
+    phone: "Téléphone",
+    shippingAddress: "Adresse de livraison",
+    streetAddress: "Adresse",
+    city: "Ville",
+    postalCode: "Code postal",
+    country: "Pays",
+    notes: "Notes",
+    notesPlaceholder: "Toute information utile à notre équipe avant l'envoi du kit…",
+    sending: "Envoi…",
+    submit: "Envoyer la demande d'échantillon",
+  },
+  en: {
+    selectProduct: "Select at least one product you'd like to sample",
+    received: "Sample request received",
+    thankYou: "Thank you",
+    thankYouBody:
+      "Our team reviews every sample request by hand and will come back to you shortly to confirm shipping details. One kit per request — no minimum order applies.",
+    backToCatalog: "Back to catalog",
+    buyerEvaluation: "Buyer evaluation",
+    title: "Request a sample",
+    intro:
+      "One sample kit per request, no minimum order — this is a separate flow from the priced RFQ cart. Tell us which lines you'd like to evaluate and our team reviews the request by hand.",
+    productsOfInterest: "Product(s) of interest",
+    contactName: "Contact name",
+    company: "Company",
+    email: "Email",
+    phone: "Phone",
+    shippingAddress: "Shipping address",
+    streetAddress: "Street address",
+    city: "City",
+    postalCode: "Postal code",
+    country: "Country",
+    notes: "Notes",
+    notesPlaceholder: "Anything our team should know before shipping the kit…",
+    sending: "Sending…",
+    submit: "Submit sample request",
+  },
+};
 
 interface ProductOption {
   id: string;
@@ -38,6 +95,7 @@ interface ProductOption {
 
 function SampleRequestPage() {
   const { user } = useSession();
+  const t = useT(COPY);
   const [submitting, setSubmitting] = useState(false);
   const [sent, setSent] = useState(false);
   const [productIds, setProductIds] = useState<string[]>([]);
@@ -73,7 +131,7 @@ function SampleRequestPage() {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (productIds.length === 0) {
-      toast.error("Select at least one product you'd like to sample");
+      toast.error(t.selectProduct);
       return;
     }
     setSubmitting(true);
@@ -119,14 +177,11 @@ function SampleRequestPage() {
   if (sent) {
     return (
       <div className="mx-auto max-w-2xl px-5 py-28 text-center">
-        <p className="eyebrow">Sample request received</p>
-        <h1 className="stencil mt-3 text-3xl font-medium text-primary">Thank you</h1>
-        <p className="mt-4 text-muted-foreground">
-          Our team reviews every sample request by hand and will come back to you shortly to confirm
-          shipping details. One kit per request — no minimum order applies.
-        </p>
+        <p className="eyebrow">{t.received}</p>
+        <h1 className="stencil mt-3 text-3xl font-medium text-primary">{t.thankYou}</h1>
+        <p className="mt-4 text-muted-foreground">{t.thankYouBody}</p>
         <Link to="/catalog" className="mt-8 inline-block">
-          <Button variant="outline">Back to catalog</Button>
+          <Button variant="outline">{t.backToCatalog}</Button>
         </Link>
       </div>
     );
@@ -134,19 +189,14 @@ function SampleRequestPage() {
 
   return (
     <div className="mx-auto max-w-2xl px-5 py-14">
-      <p className="eyebrow">Buyer evaluation</p>
-      <h1 className="stencil mt-3 text-3xl font-medium text-primary sm:text-4xl">
-        Request a sample
-      </h1>
-      <p className="mt-4 text-muted-foreground">
-        One sample kit per request, no minimum order — this is a separate flow from the priced RFQ
-        cart. Tell us which lines you'd like to evaluate and our team reviews the request by hand.
-      </p>
+      <p className="eyebrow">{t.buyerEvaluation}</p>
+      <h1 className="stencil mt-3 text-3xl font-medium text-primary sm:text-4xl">{t.title}</h1>
+      <p className="mt-4 text-muted-foreground">{t.intro}</p>
 
       <form className="mt-10 space-y-6" onSubmit={submit}>
         <div>
           <Label className="eyebrow">
-            Product(s) of interest <span className="text-clay">*</span>
+            {t.productsOfInterest} <span className="text-clay">*</span>
           </Label>
           <ul className="mt-3 space-y-2 border border-border p-4">
             {products.map((p) => (
@@ -165,7 +215,7 @@ function SampleRequestPage() {
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Contact name" required>
+          <Field label={t.contactName} required>
             <Input
               required
               maxLength={100}
@@ -173,7 +223,7 @@ function SampleRequestPage() {
               onChange={(e) => setForm({ ...form, contact_name: e.target.value })}
             />
           </Field>
-          <Field label="Company" required>
+          <Field label={t.company} required>
             <Input
               required
               maxLength={120}
@@ -184,7 +234,7 @@ function SampleRequestPage() {
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Email" required>
+          <Field label={t.email} required>
             <Input
               required
               type="email"
@@ -193,7 +243,7 @@ function SampleRequestPage() {
               onChange={(e) => setForm({ ...form, email: e.target.value })}
             />
           </Field>
-          <Field label="Phone">
+          <Field label={t.phone}>
             <Input
               type="tel"
               maxLength={40}
@@ -205,58 +255,58 @@ function SampleRequestPage() {
 
         <div>
           <Label className="eyebrow mb-1.5 block">
-            Shipping address <span className="text-clay">*</span>
+            {t.shippingAddress} <span className="text-clay">*</span>
           </Label>
           <div className="space-y-3">
             <Input
               required
-              placeholder="Street address"
+              placeholder={t.streetAddress}
               maxLength={200}
               value={form.address_line}
               onChange={(e) => setForm({ ...form, address_line: e.target.value })}
-              aria-label="Street address"
+              aria-label={t.streetAddress}
             />
             <div className="grid gap-3 sm:grid-cols-3">
               <Input
                 required
-                placeholder="City"
+                placeholder={t.city}
                 maxLength={80}
                 value={form.city}
                 onChange={(e) => setForm({ ...form, city: e.target.value })}
-                aria-label="City"
+                aria-label={t.city}
               />
               <Input
                 required
-                placeholder="Postal code"
+                placeholder={t.postalCode}
                 maxLength={20}
                 value={form.postal_code}
                 onChange={(e) => setForm({ ...form, postal_code: e.target.value })}
-                aria-label="Postal code"
+                aria-label={t.postalCode}
               />
               <Input
                 required
-                placeholder="Country"
+                placeholder={t.country}
                 maxLength={80}
                 value={form.country}
                 onChange={(e) => setForm({ ...form, country: e.target.value })}
-                aria-label="Country"
+                aria-label={t.country}
               />
             </div>
           </div>
         </div>
 
-        <Field label="Notes">
+        <Field label={t.notes}>
           <Textarea
             maxLength={600}
             rows={3}
-            placeholder="Anything our team should know before shipping the kit…"
+            placeholder={t.notesPlaceholder}
             value={form.notes}
             onChange={(e) => setForm({ ...form, notes: e.target.value })}
           />
         </Field>
 
         <Button type="submit" variant="clay" className="w-full" disabled={submitting}>
-          {submitting ? "Sending…" : "Submit sample request"}
+          {submitting ? t.sending : t.submit}
         </Button>
       </form>
     </div>
