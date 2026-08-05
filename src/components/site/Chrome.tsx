@@ -233,7 +233,7 @@ export function Header() {
 export function Footer() {
   const t = useT(COPY);
   return (
-    <footer className="relative mt-24 overflow-hidden border-t border-border bg-primary text-primary-foreground">
+    <footer className="relative overflow-hidden bg-primary text-primary-foreground">
       <div className="relative mx-auto grid max-w-6xl gap-10 px-5 py-14 sm:grid-cols-3">
         <div>
           <Wordmark tone="invert" />

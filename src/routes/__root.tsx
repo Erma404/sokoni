@@ -14,6 +14,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { RfqProvider, SessionProvider } from "@/lib/app-context";
 import { LanguageProvider } from "@/lib/language";
 import { Header, Footer } from "@/components/site/Chrome";
+import { ContactCta } from "@/components/site/ContactCta";
 import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
@@ -136,7 +137,10 @@ function RootComponent() {
                 {/* Required: nested routes render here. */}
                 <Outlet />
               </main>
-              <Footer />
+              <div className="mt-24">
+                <ContactCta />
+                <Footer />
+              </div>
             </div>
             <Toaster position="top-center" />
           </RfqProvider>
