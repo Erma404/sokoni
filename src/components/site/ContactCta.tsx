@@ -26,12 +26,12 @@ export function ContactCta() {
   if (pathname === "/contact") return null;
 
   return (
-    <section className="border-b border-primary-foreground/15 bg-primary text-primary-foreground">
+    <section className="mt-24 border-y border-border bg-secondary">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-6 px-5 py-12">
         <div>
-          <p className="eyebrow text-primary-foreground/60">{t.eyebrow}</p>
-          <h2 className="stencil mt-2 text-xl font-medium sm:text-2xl">{t.title}</h2>
-          <p className="mt-2 max-w-xl text-sm text-primary-foreground/75">{t.body}</p>
+          <p className="eyebrow">{t.eyebrow}</p>
+          <h2 className="stencil mt-2 text-xl font-medium text-primary sm:text-2xl">{t.title}</h2>
+          <p className="mt-2 max-w-xl text-sm text-muted-foreground">{t.body}</p>
         </div>
         <Link to="/contact" className="shrink-0">
           <Button variant="clay">

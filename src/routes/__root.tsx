@@ -137,10 +137,8 @@ function RootComponent() {
                 {/* Required: nested routes render here. */}
                 <Outlet />
               </main>
-              <div className="mt-24">
-                <ContactCta />
-                <Footer />
-              </div>
+              <ContactCta />
+              <Footer />
             </div>
             <Toaster position="top-center" />
           </RfqProvider>
