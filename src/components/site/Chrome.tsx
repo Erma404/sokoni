@@ -265,7 +265,7 @@ export function Footer() {
                 {t.footerTagline}
               </p>
               <Link to="/rfq" className="mt-6 inline-block">
-                <span className="inline-flex items-center gap-2 rounded-full bg-[#72c635] px-6 py-3 text-sm font-bold text-[#173d26]">
+                <span className="inline-flex items-center gap-2 rounded-full bg-[#0a4934] px-6 py-3 text-sm font-bold text-white">
                   {t.requestQuote}
                   <ArrowUpRight className="size-3.5" />
                 </span>

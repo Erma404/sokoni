@@ -449,7 +449,7 @@ function Index() {
                 {t.heroLine3}
               </h1>
               <Link to="/rfq" className="mt-6">
-                <span className="inline-flex items-center gap-2 rounded-[24px] bg-[#72c635] px-5 py-3 text-[11px] font-bold text-[#173d26]">
+                <span className="inline-flex items-center gap-2 rounded-[24px] bg-[#0a4934] px-5 py-3 text-[11px] font-bold text-white">
                   {t.requestQuote}
                   <ArrowRight className="size-3.5" />
                 </span>
@@ -581,7 +581,7 @@ function Index() {
             {t.aboutBody}
           </p>
           <Link to="/farms" className="mt-6 inline-block">
-            <span className="inline-flex items-center gap-2 rounded-[24px] bg-[#72c635] px-4 py-2.5 text-[10px] font-bold text-[#173d26]">
+            <span className="inline-flex items-center gap-2 rounded-[24px] bg-[#0a4934] px-4 py-2.5 text-[10px] font-bold text-white">
               {t.aboutCta}
               <ArrowRight className="size-3" />
             </span>

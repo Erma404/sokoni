@@ -230,7 +230,7 @@ function CheckpointForm({ token, onDone }: { token: string; onDone: () => void }
           onChange={(e) => setF({ ...f, notes: e.target.value })}
         />
       </Row>
-      <Button type="submit" variant="lime" disabled={busy}>
+      <Button type="submit" variant="cta" disabled={busy}>
         {busy ? t.logging : t.logButton}
       </Button>
     </form>

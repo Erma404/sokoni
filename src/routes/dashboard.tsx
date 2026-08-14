@@ -114,7 +114,7 @@ function Dashboard() {
         <h1 className="stencil text-2xl font-medium text-primary">{t.signInRequired}</h1>
         <p className="mt-3 text-muted-foreground">{t.signInBody}</p>
         <Link to="/auth" className="mt-6 inline-block">
-          <Button variant="lime">{t.signIn}</Button>
+          <Button variant="cta">{t.signIn}</Button>
         </Link>
       </div>
     );

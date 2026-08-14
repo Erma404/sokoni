@@ -326,7 +326,7 @@ function RfqPage() {
             </Field>
             <Button
               type="submit"
-              variant="lime"
+              variant="cta"
               className="w-full"
               disabled={submitting || !items.length || !meetsMinimum}
             >

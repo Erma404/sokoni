@@ -181,7 +181,7 @@ function AuthPage() {
                     onChange={(e) => setPassword(e.target.value)}
                   />
                 </div>
-                <Button type="submit" variant="lime" className="w-full" disabled={busy}>
+                <Button type="submit" variant="cta" className="w-full" disabled={busy}>
                   {busy ? t.pleaseWait : mode === "signin" ? t.signIn : t.createAccount}
                 </Button>
               </form>

@@ -247,7 +247,7 @@ function Catalog() {
                       </span>
                     </div>
                     <Button
-                      variant="lime"
+                      variant="cta"
                       className="mt-4 w-full"
                       onClick={() => {
                         add({
@@ -282,7 +282,7 @@ function Catalog() {
       <div className="mt-14 flex flex-wrap items-center justify-between gap-4 border-t border-border pt-6">
         <p className="text-sm text-muted-foreground">{t.footerNote}</p>
         <Link to="/rfq">
-          <Button variant="lime">
+          <Button variant="cta">
             {t.reviewCart}
             <ArrowRight className="size-4" />
           </Button>
