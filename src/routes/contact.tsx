@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import contactImg from "@/assets/farm-manager-portrait.jpg";
+import contactImg2 from "@/assets/picker-woman-braids.jpg";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -126,36 +127,63 @@ function ContactPage() {
   }
 
   return (
-    <div className="mx-auto max-w-6xl px-5 py-14">
-      <div className="grid gap-10 md:grid-cols-[1fr_0.8fr] md:items-center">
-        <div>
-          <p className="eyebrow">{t.getInTouch}</p>
-          <h1 className="mt-3 text-4xl font-normal tracking-[-0.02em] text-primary sm:text-4xl">
-            {t.title}
-          </h1>
-          <p className="mt-4 max-w-md text-muted-foreground">
-            {t.introPre}{" "}
-            <Link to="/rfq" className="text-clay underline underline-offset-4">
-              {t.requestQuote}
-            </Link>
-            {t.introMid}{" "}
-            <Link to="/sample-request" className="text-clay underline underline-offset-4">
-              {t.requestSample}
-            </Link>
-            {t.introPost}
-          </p>
-        </div>
-        <div className="hidden overflow-hidden rounded-xl md:block">
-          <img
-            src={contactImg}
-            alt="Responsable ferme partenaire Sokoni Export, Murang'a, Kenya"
-            className="aspect-[4/3] w-full object-cover"
-            style={{ objectPosition: "center 25%" }}
-          />
-        </div>
-      </div>
+    <div>
+      {/* Header — matches the homepage's "Trade desk" block exactly: pale-green
+          canvas, giant title, two organically-rounded photos, intro copy. */}
+      <section className="mb-3 bg-background">
+        <div className="mx-auto max-w-[1800px] px-3 sm:px-5 lg:px-8">
+          <div className="rounded-xl bg-[#eff8f0] px-[7%] py-16 sm:py-20 lg:py-24">
+            <div className="mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-[1fr_0.6fr_0.85fr] lg:gap-8">
+              <div>
+                <p className="eyebrow">{t.getInTouch}</p>
+                <h1
+                  className="mt-3 text-[42px] font-normal leading-[0.95] tracking-[-0.03em] text-[#123323] sm:text-[64px]"
+                  style={{ fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif' }}
+                >
+                  {t.title}
+                </h1>
+              </div>
 
-      <form className="mt-10 max-w-2xl space-y-4" onSubmit={submit}>
+              <div className="grid gap-2.5">
+                <div className="aspect-[1.4] overflow-hidden rounded-[26px_26px_26px_64px]">
+                  <img
+                    src={contactImg}
+                    alt="Responsable ferme partenaire Sokoni Export, Murang'a, Kenya"
+                    className="h-full w-full object-cover"
+                    style={{ objectPosition: "center 25%" }}
+                  />
+                </div>
+                <div className="aspect-[1.4] overflow-hidden rounded-[64px_26px_26px_26px]">
+                  <img
+                    src={contactImg2}
+                    alt="Récolte d'avocats au Kenya, ferme partenaire Sokoni Export"
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+              </div>
+
+              <div style={{ fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif' }}>
+                <p className="text-sm leading-relaxed text-[#44554a]">
+                  {t.introPre}{" "}
+                  <Link to="/rfq" className="font-semibold text-[#0a4934] underline underline-offset-4">
+                    {t.requestQuote}
+                  </Link>
+                  {t.introMid}{" "}
+                  <Link
+                    to="/sample-request"
+                    className="font-semibold text-[#0a4934] underline underline-offset-4"
+                  >
+                    {t.requestSample}
+                  </Link>
+                  {t.introPost}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <form className="mx-auto max-w-2xl space-y-4 px-5 pb-14" onSubmit={submit}>
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label={t.name} required>
             <Input

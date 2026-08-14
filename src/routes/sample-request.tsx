@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import sampleImg from "@/assets/avocado-handful.jpg";
 
 export const Route = createFileRoute("/sample-request")({
   head: () => ({
@@ -188,12 +189,25 @@ function SampleRequestPage() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl px-5 py-14">
-      <p className="eyebrow">{t.buyerEvaluation}</p>
-      <h1 className="stencil mt-3 text-3xl font-medium text-primary sm:text-4xl">{t.title}</h1>
-      <p className="mt-4 text-muted-foreground">{t.intro}</p>
+    <div className="mx-auto max-w-6xl px-5 py-14 sm:py-20">
+      <div className="grid gap-10 md:grid-cols-[1fr_0.8fr] md:items-center">
+        <div className="max-w-2xl">
+          <p className="eyebrow">{t.buyerEvaluation}</p>
+          <h1 className="mt-3 text-4xl font-normal tracking-[-0.02em] text-primary sm:text-4xl">
+            {t.title}
+          </h1>
+          <p className="mt-4 text-muted-foreground">{t.intro}</p>
+        </div>
+        <div className="hidden overflow-hidden rounded-xl md:block">
+          <img
+            src={sampleImg}
+            alt="Avocats Hass fraîchement récoltés, Sokoni Export"
+            className="aspect-[4/3] w-full object-cover"
+          />
+        </div>
+      </div>
 
-      <form className="mt-10 space-y-6" onSubmit={submit}>
+      <form className="mt-10 max-w-2xl space-y-6" onSubmit={submit}>
         <div>
           <Label className="eyebrow">
             {t.productsOfInterest} <span className="text-clay">*</span>
