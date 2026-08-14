@@ -26,27 +26,37 @@ export function SokoniMark({
 }
 
 
-export function Wordmark({ className, tone = "default" }: { className?: string; tone?: "default" | "invert" }) {
+/**
+ * Wordmark — matches sokoni-hero-banner.html's `.brand` exactly: stacked
+ * Georgia serif lockup, no icon, bold "Sokoni" over thin "Export".
+ */
+export function Wordmark({
+  className,
+  tone = "default",
+}: {
+  className?: string;
+  tone?: "default" | "invert";
+}) {
   return (
-    <span className={cn("flex items-center gap-2.5", className)}>
-      <SokoniMark className={tone === "invert" ? "size-8 text-primary-foreground" : "size-8 text-primary"} />
-      <span className="leading-none">
-        <span
-          className={cn(
-            "stencil block text-lg font-medium tracking-tight",
-            tone === "invert" ? "text-primary-foreground" : "text-primary",
-          )}
-        >
-          Sokoni
-        </span>
-        <span
-          className={cn(
-            "block text-[0.6rem] font-medium uppercase tracking-[0.3em]",
-            tone === "invert" ? "text-primary-foreground/60" : "text-clay",
-          )}
-        >
-          Export
-        </span>
+    <span
+      className={cn("flex flex-col leading-[0.7]", className)}
+      style={{ fontFamily: "Georgia, serif" }}
+    >
+      <span
+        className={cn(
+          "text-[23px] font-bold",
+          tone === "invert" ? "text-white" : "text-[#0a4934]",
+        )}
+      >
+        Sokoni
+      </span>
+      <span
+        className={cn(
+          "mt-0.5 text-[17px] font-bold",
+          tone === "invert" ? "text-white/80" : "text-[#0a4934]",
+        )}
+      >
+        Export
       </span>
     </span>
   );

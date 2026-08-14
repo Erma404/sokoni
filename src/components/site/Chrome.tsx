@@ -4,9 +4,12 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useRfq, useSession } from "@/lib/app-context";
 import { useLanguage, useT, type Lang } from "@/lib/language";
-import { Button } from "@/components/ui/button";
 import { Wordmark } from "@/components/site/Brand";
+import avocadoHandfulImg from "@/assets/avocado-handful.jpg";
+import avocadoCrateImg from "@/assets/avocado-crate-closeup.jpg";
 import { cn } from "@/lib/utils";
+
+const HELVETICA = '"Helvetica Neue", Helvetica, Arial, sans-serif';
 
 const NAV: { to: string; label: Record<Lang, string> }[] = [
   { to: "/catalog", label: { fr: "Catalogue", en: "Catalog" } },
@@ -67,9 +70,10 @@ function LanguageSwitch({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "flex items-center overflow-hidden rounded-full border border-border text-xs font-medium",
+        "flex items-center overflow-hidden rounded-full border border-[#d5d5cf] text-xs font-medium",
         className,
       )}
+      style={{ fontFamily: HELVETICA }}
       role="group"
       aria-label="Language"
     >
@@ -81,9 +85,7 @@ function LanguageSwitch({ className }: { className?: string }) {
           aria-pressed={lang === l}
           className={cn(
             "px-2.5 py-1.5 uppercase tracking-wide transition-colors",
-            lang === l
-              ? "bg-primary text-primary-foreground"
-              : "text-muted-foreground hover:text-foreground",
+            lang === l ? "bg-[#0a4934] text-white" : "text-[#526158] hover:text-[#142b21]",
           )}
         >
           {l}
@@ -107,7 +109,10 @@ export function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
+    <header
+      className="sticky top-0 z-50 border-b border-[#e5e5e0] bg-white/95 backdrop-blur"
+      style={{ fontFamily: HELVETICA }}
+    >
       <div className="mx-auto grid h-20 max-w-6xl grid-cols-[auto_1fr_auto] items-center gap-4 px-5">
         <Link
           to="/"
@@ -122,8 +127,8 @@ export function Header() {
             <Link
               key={item.to}
               to={item.to}
-              className="text-sm text-foreground/70 transition-colors hover:text-primary"
-              activeProps={{ className: "text-primary font-medium" }}
+              className="text-sm text-[#44554a] transition-colors hover:text-[#0a4934]"
+              activeProps={{ className: "text-[#0a4934] font-semibold" }}
             >
               {item.label[lang]}
             </Link>
@@ -134,13 +139,13 @@ export function Header() {
           <LanguageSwitch />
           <Link
             to="/rfq"
-            className="flex items-center gap-1 text-sm text-foreground/70 transition-colors hover:text-primary"
+            className="flex items-center gap-1 text-sm text-[#44554a] transition-colors hover:text-[#0a4934]"
           >
             {t.rfq}
             <span
               className={cn(
                 "flex size-4 items-center justify-center rounded-full text-[0.6rem] font-semibold",
-                count > 0 ? "bg-clay text-clay-foreground" : "bg-muted text-muted-foreground",
+                count > 0 ? "bg-[#c9654a] text-white" : "bg-[#e5e5e0] text-[#526158]",
               )}
             >
               {count}
@@ -149,7 +154,7 @@ export function Header() {
           {isAdmin && (
             <Link
               to="/admin"
-              className="text-sm text-foreground/70 transition-colors hover:text-primary"
+              className="text-sm text-[#44554a] transition-colors hover:text-[#0a4934]"
             >
               {t.backOffice}
             </Link>
@@ -158,13 +163,13 @@ export function Header() {
             <>
               <Link
                 to="/dashboard"
-                className="text-sm text-foreground/70 transition-colors hover:text-primary"
+                className="text-sm text-[#44554a] transition-colors hover:text-[#0a4934]"
               >
                 {t.myOrders}
               </Link>
               <button
                 onClick={signOut}
-                className="text-sm text-foreground/70 transition-colors hover:text-primary"
+                className="text-sm text-[#44554a] transition-colors hover:text-[#0a4934]"
               >
                 {t.signOut}
               </button>
@@ -172,13 +177,13 @@ export function Header() {
           ) : (
             <Link
               to="/auth"
-              className="text-sm text-foreground/70 transition-colors hover:text-primary"
+              className="text-sm text-[#44554a] transition-colors hover:text-[#0a4934]"
             >
               {t.signIn}
             </Link>
           )}
           <Link to="/rfq">
-            <span className="stencil inline-flex items-center gap-1.5 rounded-full bg-primary px-5 py-2.5 text-xs font-bold text-primary-foreground transition-colors hover:bg-primary/90">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-[#0a4934] px-5 py-2.5 text-xs font-bold text-white transition-colors hover:bg-[#0a4934]/90">
               {t.requestQuote}
               <ArrowUpRight className="size-3.5" />
             </span>
@@ -194,26 +199,26 @@ export function Header() {
       </div>
 
       {open && (
-        <div className="border-t border-border bg-background px-5 py-4 md:hidden">
+        <div className="border-t border-[#e5e5e0] bg-white px-5 py-4 md:hidden">
           <div className="flex flex-col gap-3">
             {NAV.map((item) => (
               <Link
                 key={item.to}
                 to={item.to}
                 onClick={() => setOpen(false)}
-                className="text-sm text-foreground"
+                className="text-sm text-[#142b21]"
               >
                 {item.label[lang]}
               </Link>
             ))}
-            <Link to="/contact" onClick={() => setOpen(false)} className="text-sm text-clay">
+            <Link to="/contact" onClick={() => setOpen(false)} className="text-sm text-[#c9654a]">
               {t.contact}
             </Link>
-            <Link to="/rfq" onClick={() => setOpen(false)} className="text-sm text-foreground">
+            <Link to="/rfq" onClick={() => setOpen(false)} className="text-sm text-[#142b21]">
               {t.rfqCart} ({count})
             </Link>
             {isAdmin && (
-              <Link to="/admin" onClick={() => setOpen(false)} className="text-sm text-foreground">
+              <Link to="/admin" onClick={() => setOpen(false)} className="text-sm text-[#142b21]">
                 {t.backOffice}
               </Link>
             )}
@@ -222,16 +227,16 @@ export function Header() {
                 <Link
                   to="/dashboard"
                   onClick={() => setOpen(false)}
-                  className="text-sm text-foreground"
+                  className="text-sm text-[#142b21]"
                 >
                   {t.myOrders}
                 </Link>
-                <button className="text-left text-sm text-muted-foreground" onClick={signOut}>
+                <button className="text-left text-sm text-[#526158]" onClick={signOut}>
                   {t.signOut}
                 </button>
               </>
             ) : (
-              <Link to="/auth" onClick={() => setOpen(false)} className="text-sm text-foreground">
+              <Link to="/auth" onClick={() => setOpen(false)} className="text-sm text-[#142b21]">
                 {t.signIn}
               </Link>
             )}
@@ -245,18 +250,15 @@ export function Header() {
 export function Footer() {
   const t = useT(COPY);
   return (
-    <footer className="mt-3 bg-background">
+    <footer className="mt-3 bg-white">
       <div className="mx-auto max-w-[1800px] px-3 sm:px-5 lg:px-8">
-        <div className="rounded-xl bg-[#f4f4f2] px-[7%] py-16 sm:py-20">
+        <div className="rounded-xl bg-[#f4f4f2] px-[7%] py-16 sm:py-20" style={{ fontFamily: HELVETICA }}>
           <div className="grid gap-12 lg:grid-cols-[1fr_1.4fr] lg:gap-8">
             <div className="text-center lg:text-left">
               <span className="inline-block">
                 <Wordmark />
               </span>
-              <h2
-                className="mt-6 text-4xl font-normal tracking-[-0.03em] text-[#142b21] sm:text-5xl"
-                style={{ fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif' }}
-              >
+              <h2 className="mt-6 text-4xl font-normal tracking-[-0.03em] text-[#142b21] sm:text-5xl">
                 {t.footerHeadline}
               </h2>
               <p className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-[#44554a] lg:mx-0">
@@ -272,45 +274,49 @@ export function Footer() {
 
             <div className="grid grid-cols-2 gap-8 sm:grid-cols-2">
               <div className="text-sm">
-                <div className="stencil text-xs text-[#142b21]">{t.trade}</div>
+                <div className="text-xs font-bold uppercase tracking-[0.08em] text-[#142b21]">
+                  {t.trade}
+                </div>
                 <ul className="mt-4 space-y-2.5 text-[#44554a]">
                   <li>
-                    <Link to="/catalog" className="hover:text-primary">
+                    <Link to="/catalog" className="hover:text-[#0a4934]">
                       {t.catalog}
                     </Link>
                   </li>
                   <li>
-                    <Link to="/rfq" className="hover:text-primary">
+                    <Link to="/rfq" className="hover:text-[#0a4934]">
                       {t.requestQuote}
                     </Link>
                   </li>
                   <li>
-                    <Link to="/sample-request" className="hover:text-primary">
+                    <Link to="/sample-request" className="hover:text-[#0a4934]">
                       {t.requestSample}
                     </Link>
                   </li>
                   <li>
-                    <Link to="/logistics" className="hover:text-primary">
+                    <Link to="/logistics" className="hover:text-[#0a4934]">
                       {t.incoterms}
                     </Link>
                   </li>
                   <li>
-                    <Link to="/contact" className="hover:text-primary">
+                    <Link to="/contact" className="hover:text-[#0a4934]">
                       {t.contact}
                     </Link>
                   </li>
                 </ul>
               </div>
               <div className="text-sm">
-                <div className="stencil text-xs text-[#142b21]">{t.origin}</div>
+                <div className="text-xs font-bold uppercase tracking-[0.08em] text-[#142b21]">
+                  {t.origin}
+                </div>
                 <ul className="mt-4 space-y-2.5 text-[#44554a]">
                   <li>
-                    <Link to="/farms" className="hover:text-primary">
+                    <Link to="/farms" className="hover:text-[#0a4934]">
                       {t.farmsQuality}
                     </Link>
                   </li>
                   <li>
-                    <Link to="/track" className="hover:text-primary">
+                    <Link to="/track" className="hover:text-[#0a4934]">
                       {t.trackShipment}
                     </Link>
                   </li>
@@ -319,7 +325,28 @@ export function Footer() {
             </div>
           </div>
 
-          <div className="mt-12 border-t border-[#d5d5cf] pt-6 text-center text-xs text-[#526158]">
+          {/* Decorative bookend photos, framing the divider before the copyright line */}
+          <div className="mt-12 flex items-center gap-4 sm:gap-6">
+            <div className="mask-leaf hidden size-16 shrink-0 sm:block sm:size-20">
+              <img
+                src={avocadoHandfulImg}
+                alt=""
+                aria-hidden
+                className="h-full w-full object-cover"
+              />
+            </div>
+            <div className="h-px flex-1 bg-[#d5d5cf]" />
+            <div className="mask-leaf hidden size-16 shrink-0 sm:block sm:size-20">
+              <img
+                src={avocadoCrateImg}
+                alt=""
+                aria-hidden
+                className="h-full w-full object-cover"
+              />
+            </div>
+          </div>
+
+          <div className="mt-6 text-center text-xs text-[#526158]">
             © {new Date().getFullYear()} Sokoni Export — {t.copyright}
           </div>
         </div>
