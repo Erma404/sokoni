@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Trash2 } from "lucide-react";
+import { ArrowRight, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { MIN_ORDER_KG, useRfq, useSession } from "@/lib/app-context";
 import { eur } from "@/lib/format";
@@ -337,6 +337,7 @@ function RfqPage() {
                   : !meetsMinimum
                     ? t.short(MIN_ORDER_KG - totalWeightKg, MIN_ORDER_KG)
                     : t.sendQuote}
+              {!submitting && items.length > 0 && meetsMinimum && <ArrowRight className="size-4" />}
             </Button>
           </form>
         </section>

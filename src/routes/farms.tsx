@@ -272,34 +272,31 @@ function Farms() {
 
   return (
     <div>
-      <header className="relative overflow-hidden border-b border-border bg-secondary">
-        <div className="relative mx-auto grid max-w-6xl items-center gap-10 px-5 py-16 md:grid-cols-[1.1fr_0.9fr]">
+      <header className="bg-background">
+        <div className="mx-auto grid max-w-6xl items-center gap-10 px-5 py-16 sm:py-20 md:grid-cols-[1.1fr_0.9fr]">
           <div>
             <p className="eyebrow">{t.origin}</p>
-            <h1 className="stencil mt-3 max-w-2xl text-3xl font-medium text-primary sm:text-5xl">
+            <h1 className="mt-3 max-w-2xl text-4xl font-normal tracking-[-0.02em] text-primary sm:text-5xl">
               {t.title}
             </h1>
             <p className="mt-5 max-w-xl text-muted-foreground">{t.heroBody}</p>
             <dl className="mt-8 grid max-w-lg grid-cols-3 gap-4">
               {t.heroStats.map(([v, l]) => (
-                <div key={l} className="rounded-2xl bg-card p-4">
-                  <dt className="stencil text-xl font-medium text-primary">{v}</dt>
+                <div key={l} className="rounded-xl border border-border bg-card p-4">
+                  <dt className="text-xl font-medium text-primary">{v}</dt>
                   <dd className="mt-1 text-xs text-muted-foreground">{l}</dd>
                 </div>
               ))}
             </dl>
           </div>
-          <div className="flex justify-center">
-            <div className="relative">
-              <div aria-hidden className="absolute -inset-4 rounded-full border border-ochre/40" />
-              <img
-                src={farmHeaderImg}
-                alt="Sokoni Export worker loading Hass avocado crates onto a truck at a Kenyan farm"
-                width={900}
-                height={900}
-                className="mask-circle aspect-square w-full max-w-xs object-cover sm:max-w-sm"
-              />
-            </div>
+          <div className="overflow-hidden rounded-xl">
+            <img
+              src={farmHeaderImg}
+              alt="Sokoni Export worker loading Hass avocado crates onto a truck at a Kenyan farm"
+              width={900}
+              height={900}
+              className="aspect-[4/3] w-full object-cover"
+            />
           </div>
         </div>
       </header>

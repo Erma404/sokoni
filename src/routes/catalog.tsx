@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
-import { Search } from "lucide-react";
+import { ArrowRight, Search } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { MIN_ORDER_KG, useRfq } from "@/lib/app-context";
@@ -247,6 +247,7 @@ function Catalog() {
                       </span>
                     </div>
                     <Button
+                      variant="lime"
                       className="mt-4 w-full"
                       onClick={() => {
                         add({
@@ -262,6 +263,7 @@ function Catalog() {
                       }}
                     >
                       {t.addToRfq}
+                      <ArrowRight className="size-4" />
                     </Button>
                     <Link
                       to="/sample-request"
@@ -280,7 +282,10 @@ function Catalog() {
       <div className="mt-14 flex flex-wrap items-center justify-between gap-4 border-t border-border pt-6">
         <p className="text-sm text-muted-foreground">{t.footerNote}</p>
         <Link to="/rfq">
-          <Button variant="lime">{t.reviewCart}</Button>
+          <Button variant="lime">
+            {t.reviewCart}
+            <ArrowRight className="size-4" />
+          </Button>
         </Link>
       </div>
     </div>
