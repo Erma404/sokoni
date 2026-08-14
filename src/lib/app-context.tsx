@@ -168,7 +168,9 @@ export function RfqProvider({ children }: { children: ReactNode }) {
       setQty,
       remove,
       clear,
-      count: items.reduce((n, i) => n + i.cartons, 0),
+      // Number of distinct product lines in the cart — not total cartons,
+      // which reads as an unreadable large number in the header badge.
+      count: items.length,
       estimate: items.reduce((n, i) => n + i.cartons * i.pricePerCarton, 0),
       totalWeightKg,
       meetsMinimum: totalWeightKg >= MIN_ORDER_KG,

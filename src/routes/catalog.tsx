@@ -10,6 +10,10 @@ import { useT } from "@/lib/language";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import packhouseImg from "@/assets/packhouse-crates.jpg";
+import heroOrchardImg from "@/assets/hero-orchard.jpg";
+import pickerOverallsImg from "@/assets/picker-blue-overalls.webp";
+
+const CARD_IMAGES = [packhouseImg, heroOrchardImg, pickerOverallsImg];
 
 export const Route = createFileRoute("/catalog")({
   head: () => ({
@@ -208,82 +212,76 @@ function Catalog() {
       ) : filtered.length === 0 ? (
         <p className="py-16 text-sm text-muted-foreground">{t.noMatch}</p>
       ) : (
-        <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((p) => {
+        <div
+          className="mt-10 grid grid-cols-1 items-start gap-x-4 gap-y-6 sm:grid-cols-2 lg:grid-cols-3"
+          style={{ fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif' }}
+        >
+          {filtered.map((p, i) => {
             // MOQ if this product is ordered alone: the carton count needed to
             // clear the 400kg shipment floor on its own (400kg ÷ carton weight).
             const soloMoq = Math.ceil(MIN_ORDER_KG / Number(p.net_weight_kg));
             return (
-              <article key={p.id} className="flex flex-col border border-border bg-card">
+              <article
+                key={p.id}
+                className="overflow-hidden rounded-2xl border border-[#d5d5cf] bg-white pb-3.5"
+              >
                 <img
-                  src={packhouseImg}
+                  src={CARD_IMAGES[i % CARD_IMAGES.length]}
                   alt={`${p.name} packed in ${p.packaging}`}
                   width={1200}
-                  height={1600}
+                  height={900}
                   loading="lazy"
-                  className="aspect-[4/3] w-full object-cover"
+                  className="aspect-[1.32] w-full object-cover"
                 />
-                <div className="flex flex-1 flex-col gap-3 p-5">
-                  <div>
-                    <h2 className="stencil text-sm font-medium">{p.name}</h2>
-                    <p className="mt-1 text-xs text-muted-foreground">
-                      {p.packaging} · {p.net_weight_kg} kg net · {p.season}
-                    </p>
-                  </div>
-                  <p className="text-sm text-muted-foreground">{p.description}</p>
-                  <ul className="flex flex-wrap gap-1.5">
-                    {(p.certifications ?? []).map((c) => (
-                      <li
-                        key={c}
-                        className="border border-primary/25 px-2 py-0.5 text-[0.65rem] uppercase tracking-wider text-primary"
-                      >
-                        {c}
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="mt-auto rule-top pt-3">
-                    <div className="flex items-baseline justify-between">
-                      <span className="stencil text-lg font-medium text-clay">
-                        {eur(Number(p.price_per_carton_eur))}
-                      </span>
-                      <span className="text-xs text-muted-foreground">{t.perCarton}</span>
-                    </div>
-                    <div className="mt-0.5 flex items-baseline justify-between text-xs text-muted-foreground">
-                      <span>
-                        {eur(Number(p.price_per_kg_eur))} {t.perKg}
-                      </span>
-                      <span>
-                        {soloMoq} {p.packaging.includes("pack") ? t.packs : t.crates}{" "}
-                        {t.ifOrderedAlone}
-                      </span>
-                    </div>
-                    <Button
-                      variant="cta"
-                      className="mt-4 w-full"
-                      onClick={() => {
-                        add({
-                          productId: p.id,
-                          name: p.name,
-                          caliber: p.caliber,
-                          packaging: p.packaging,
-                          pricePerCarton: Number(p.price_per_carton_eur),
-                          netWeightKg: Number(p.net_weight_kg),
-                          moq: soloMoq,
-                        });
-                        toast.success(`${p.name} added to your RFQ`);
-                      }}
-                    >
-                      {t.addToRfq}
-                      <ArrowRight className="size-4" />
-                    </Button>
-                    <Link
-                      to="/sample-request"
-                      className="mt-2 block text-center text-xs text-muted-foreground underline underline-offset-4 hover:text-foreground"
-                    >
-                      {t.sampleOfLine}
-                    </Link>
-                  </div>
+                <div className="mt-3 px-3 text-[13px] font-bold uppercase leading-tight tracking-[-0.01em] text-[#142b21]">
+                  {p.name}
                 </div>
+                <p className="mb-2.5 mt-1.5 min-h-[30px] px-3 text-[12px] leading-[1.45] text-[#526158]">
+                  {p.description}
+                </p>
+                <div className="my-2.5 flex flex-wrap gap-1 px-3">
+                  {(p.certifications ?? []).map((c) => (
+                    <span
+                      key={c}
+                      className="border border-[#bdc9bf] px-1.5 py-0.5 text-[9px] text-[#536055]"
+                    >
+                      {c}
+                    </span>
+                  ))}
+                </div>
+                <div className="flex items-end justify-between px-3 text-[#a44335]">
+                  <span className="text-lg font-semibold">{eur(Number(p.price_per_carton_eur))}</span>
+                  <small className="text-right text-[10px] leading-tight text-[#536055]">
+                    {t.perCarton}
+                    <br />
+                    {soloMoq} {p.packaging.includes("pack") ? t.packs : t.crates}{" "}
+                    {t.ifOrderedAlone}
+                  </small>
+                </div>
+                <button
+                  type="button"
+                  className="mx-3 mt-2 block w-[calc(100%-1.5rem)] rounded-lg bg-[#0a4934] py-2 text-center text-[13px] font-bold text-white"
+                  onClick={() => {
+                    add({
+                      productId: p.id,
+                      name: p.name,
+                      caliber: p.caliber,
+                      packaging: p.packaging,
+                      pricePerCarton: Number(p.price_per_carton_eur),
+                      netWeightKg: Number(p.net_weight_kg),
+                      moq: soloMoq,
+                    });
+                    toast.success(`${p.name} added to your RFQ`);
+                  }}
+                >
+                  {t.addToRfq}
+                </button>
+                <Link
+                  to="/sample-request"
+                  className="mx-3 mt-1.5 block text-center text-[11px] text-[#234331]"
+                >
+                  {t.sampleOfLine}
+                </Link>
               </article>
             );
           })}

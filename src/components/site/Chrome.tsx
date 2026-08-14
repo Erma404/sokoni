@@ -16,6 +16,7 @@ const NAV: { to: string; label: Record<Lang, string> }[] = [
   { to: "/track", label: { fr: "Suivi", en: "Track" } },
   { to: "/farms", label: { fr: "Fermes & qualité", en: "Farms & Quality" } },
   { to: "/logistics", label: { fr: "Logistique", en: "Logistics" } },
+  { to: "/contact", label: { fr: "Contact", en: "Contact" } },
 ];
 
 const COPY = {
@@ -110,7 +111,7 @@ export function Header() {
 
   return (
     <header
-      className="sticky top-0 z-50 border-b border-[#e5e5e0] bg-white/95 backdrop-blur"
+      className="sticky top-0 z-50 bg-white/95 backdrop-blur"
       style={{ fontFamily: HELVETICA }}
     >
       <div className="mx-auto grid h-20 max-w-6xl grid-cols-[auto_1fr_auto] items-center gap-4 px-5">
@@ -122,12 +123,12 @@ export function Header() {
           <Wordmark />
         </Link>
 
-        <nav className="hidden items-center justify-center gap-8 md:flex">
+        <nav className="hidden items-center justify-center gap-2 md:flex">
           {NAV.map((item) => (
             <Link
               key={item.to}
               to={item.to}
-              className="text-sm text-[#44554a] transition-colors hover:text-[#0a4934]"
+              className="rounded-full bg-[#f6f8f7] px-3.5 py-2 text-sm text-[#44554a] transition-colors hover:text-[#0a4934]"
               activeProps={{ className: "text-[#0a4934] font-semibold" }}
             >
               {item.label[lang]}
