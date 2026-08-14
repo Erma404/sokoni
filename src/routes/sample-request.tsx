@@ -305,7 +305,7 @@ function SampleRequestPage() {
           />
         </Field>
 
-        <Button type="submit" variant="clay" className="w-full" disabled={submitting}>
+        <Button type="submit" variant="lime" className="w-full" disabled={submitting}>
           {submitting ? t.sending : t.submit}
         </Button>
       </form>

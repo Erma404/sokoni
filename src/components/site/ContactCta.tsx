@@ -36,7 +36,7 @@ export function ContactCta() {
           <p className="mt-2 max-w-xl text-sm text-muted-foreground">{t.body}</p>
         </div>
         <Link to="/contact" className="shrink-0">
-          <Button variant="clay">
+          <Button variant="lime">
             {t.cta}
             <ArrowRight className="size-4" />
           </Button>

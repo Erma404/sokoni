@@ -82,7 +82,7 @@ function TrackEntry() {
           aria-label={t.trackingCode}
           className="font-mono"
         />
-        <Button type="submit" variant="clay">
+        <Button type="submit" variant="lime">
           {t.track}
           <ArrowRight className="size-4" />
         </Button>

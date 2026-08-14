@@ -17,6 +17,10 @@ const buttonVariants = cva(
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
         clay: "bg-clay text-clay-foreground shadow-sm hover:bg-clay/90",
+        // The site's one CTA color, exact hex from sokoni-hero-banner.html's
+        // `.button` — a rounded-full lime pill, used everywhere a page's
+        // primary action needs to stand out.
+        lime: "rounded-full bg-lime text-lime-foreground font-bold hover:bg-lime/90",
         stencil:
           "stencil bg-primary text-primary-foreground tracking-[0.12em] hover:bg-primary/90",
         outlineDark:

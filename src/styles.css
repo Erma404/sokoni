@@ -37,6 +37,8 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-clay: var(--clay);
   --color-clay-foreground: var(--clay-foreground);
+  --color-lime: var(--lime);
+  --color-lime-foreground: var(--lime-foreground);
   --color-ochre: var(--ochre);
   --color-ochre-foreground: var(--ochre-foreground);
   --color-forest-deep: var(--forest-deep);
@@ -61,9 +63,13 @@
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.245 0.008 60);
 
-  /* forest — primary green */
-  --primary: oklch(0.318 0.049 155);
+  /* forest — primary green, exact hex from sokoni-hero-banner.html's --green */
+  --primary: #0a4934;
   --primary-foreground: oklch(0.966 0.014 88);
+
+  /* lime — the site's one CTA accent, exact hex from sokoni-hero-banner.html's --lime */
+  --lime: #72c635;
+  --lime-foreground: #173d26;
 
   /* forest-deep — darkest green, used for hero overlay / footer / contact */
   --forest-deep: oklch(0.22 0.04 150);
@@ -78,8 +84,8 @@
   --accent: oklch(0.95 0.008 100);
   --accent-foreground: oklch(0.318 0.049 155);
 
-  /* terracotta / clay red */
-  --clay: oklch(0.534 0.132 36);
+  /* terracotta / clay red, exact hex from sokoni-hero-banner.html's --clay */
+  --clay: #c9654a;
   --clay-foreground: oklch(0.977 0.01 88);
 
   /* ochre accent */
@@ -93,9 +99,9 @@
   --destructive: oklch(0.505 0.176 27);
   --destructive-foreground: oklch(0.977 0.01 88);
 
-  --border: oklch(0.86 0.014 88);
-  --input: oklch(0.86 0.014 88);
-  --ring: oklch(0.318 0.049 155);
+  --border: #d5d5cf;
+  --input: #d5d5cf;
+  --ring: #0a4934;
 }
 
 .dark {

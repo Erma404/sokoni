@@ -80,7 +80,7 @@ export function PdfLogoSettings() {
       />
 
       <div className="mt-4 flex flex-wrap gap-2">
-        <Button size="sm" variant="clay" disabled={busy} onClick={() => inputRef.current?.click()}>
+        <Button size="sm" variant="lime" disabled={busy} onClick={() => inputRef.current?.click()}>
           {busy ? "Envoi…" : "Changer le logo"}
         </Button>
         {logo && (

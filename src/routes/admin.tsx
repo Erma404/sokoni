@@ -329,7 +329,7 @@ function NewOrderForm({ onCreated }: { onCreated: () => void }) {
           onChange={(e) => setF({ ...f, destination: e.target.value })}
         />
       </Row>
-      <Button type="submit" variant="clay" disabled={busy} className="w-full">
+      <Button type="submit" variant="lime" disabled={busy} className="w-full">
         {busy ? t.creating : t.createOrder}
       </Button>
     </form>

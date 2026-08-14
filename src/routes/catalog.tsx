@@ -280,7 +280,7 @@ function Catalog() {
       <div className="mt-14 flex flex-wrap items-center justify-between gap-4 border-t border-border pt-6">
         <p className="text-sm text-muted-foreground">{t.footerNote}</p>
         <Link to="/rfq">
-          <Button variant="clay">{t.reviewCart}</Button>
+          <Button variant="lime">{t.reviewCart}</Button>
         </Link>
       </div>
     </div>
