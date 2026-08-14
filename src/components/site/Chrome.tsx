@@ -120,8 +120,8 @@ export function Header() {
             <Link
               key={item.to}
               to={item.to}
-              className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-              activeProps={{ className: "text-foreground font-medium" }}
+              className="rounded-full bg-secondary/70 px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
+              activeProps={{ className: "text-primary" }}
             >
               {item.label[lang]}
             </Link>
@@ -131,12 +131,12 @@ export function Header() {
         <div className="hidden items-center gap-2 md:flex">
           <LanguageSwitch className="mr-1" />
           <Link to="/contact">
-            <Button variant="clay" size="sm">
+            <Button variant="clay" size="sm" className="stencil">
               {t.contact}
             </Button>
           </Link>
           <Link to="/rfq">
-            <Button variant="ghost" size="sm">
+            <Button variant="ghost" size="sm" className="stencil">
               {t.rfq}
               <span
                 className={cn(

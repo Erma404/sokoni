@@ -5,9 +5,9 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Sokoni Export design system.
- * Palette: deep forest green, terracotta clay, sand/cream, charcoal, ochre.
- * Type: Archivo (editorial sans) + Fredoka (modern rounded display).
+ * Sokoni Export design system — bento/card direction (sokoni-hero-banner.html).
+ * Palette: deep forest green, terracotta clay, ochre, warm neutrals on white.
+ * Type: Outfit (rounded, modern sans) throughout.
  */
 
 @theme inline {
@@ -19,7 +19,6 @@
 
   --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Outfit", ui-sans-serif, system-ui, sans-serif;
-
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -39,6 +38,10 @@
   --color-clay-foreground: var(--clay-foreground);
   --color-ochre: var(--ochre);
   --color-ochre-foreground: var(--ochre-foreground);
+  --color-forest-deep: var(--forest-deep);
+  --color-forest-deep-foreground: var(--forest-deep-foreground);
+  --color-paper: var(--paper);
+  --color-paper-foreground: var(--paper-foreground);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
@@ -49,26 +52,29 @@
 :root {
   --radius: 0.875rem;
 
-
-  --background: oklch(0.951 0.016 85.5);
+  --background: oklch(1 0 0);
   --foreground: oklch(0.245 0.008 60);
 
-  --card: oklch(0.977 0.01 88);
+  --card: oklch(1 0 0);
   --card-foreground: oklch(0.245 0.008 60);
-  --popover: oklch(0.977 0.01 88);
+  --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.245 0.008 60);
 
-  /* deep forest green */
+  /* forest — primary green */
   --primary: oklch(0.318 0.049 155);
   --primary-foreground: oklch(0.966 0.014 88);
 
-  --secondary: oklch(0.906 0.019 84);
+  /* forest-deep — darkest green, used for hero overlay / footer / contact */
+  --forest-deep: oklch(0.22 0.04 150);
+  --forest-deep-foreground: oklch(0.966 0.014 88);
+
+  --secondary: oklch(0.966 0.006 100);
   --secondary-foreground: oklch(0.318 0.049 155);
 
-  --muted: oklch(0.914 0.016 84);
+  --muted: oklch(0.966 0.006 100);
   --muted-foreground: oklch(0.485 0.014 65);
 
-  --accent: oklch(0.892 0.026 82);
+  --accent: oklch(0.95 0.008 100);
   --accent-foreground: oklch(0.318 0.049 155);
 
   /* terracotta / clay red */
@@ -79,11 +85,15 @@
   --ochre: oklch(0.702 0.121 76);
   --ochre-foreground: oklch(0.245 0.008 60);
 
+  /* paper — warm section tint, used sparingly to alternate full-bleed bands */
+  --paper: oklch(0.95 0.02 85);
+  --paper-foreground: oklch(0.245 0.008 60);
+
   --destructive: oklch(0.505 0.176 27);
   --destructive-foreground: oklch(0.977 0.01 88);
 
-  --border: oklch(0.858 0.019 82);
-  --input: oklch(0.858 0.019 82);
+  --border: oklch(0.86 0.014 88);
+  --input: oklch(0.86 0.014 88);
   --ring: oklch(0.318 0.049 155);
 }
 
@@ -106,6 +116,10 @@
   --clay-foreground: oklch(0.16 0.01 60);
   --ochre: oklch(0.74 0.12 76);
   --ochre-foreground: oklch(0.18 0.01 90);
+  --forest-deep: oklch(0.16 0.03 150);
+  --forest-deep-foreground: oklch(0.945 0.014 88);
+  --paper: oklch(0.27 0.016 88);
+  --paper-foreground: oklch(0.945 0.014 88);
   --destructive: oklch(0.58 0.18 27);
   --destructive-foreground: oklch(0.96 0.01 88);
   --border: oklch(1 0 0 / 14%);

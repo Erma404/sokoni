@@ -23,11 +23,13 @@ export function ContactCta() {
   const t = useT(COPY);
   const { pathname } = useLocation();
 
-  if (pathname === "/contact") return null;
+  // The homepage has its own trade-desk contact CTA already — this closing
+  // band would just repeat it in the old (pre-refresh) card style.
+  if (pathname === "/contact" || pathname === "/") return null;
 
   return (
-    <section className="mt-24 border-y border-border bg-secondary">
-      <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-6 px-5 py-12">
+    <section className="mx-auto mt-24 max-w-6xl px-5">
+      <div className="flex flex-wrap items-center justify-between gap-6 rounded-3xl border border-border bg-secondary px-8 py-10 sm:px-10">
         <div>
           <p className="eyebrow">{t.eyebrow}</p>
           <h2 className="stencil mt-2 text-xl font-medium text-primary sm:text-2xl">{t.title}</h2>
