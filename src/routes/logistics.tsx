@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import coldImg from "@/assets/cold-chain.jpg";
+import packhouseImg from "@/assets/packhouse-crates.jpg";
 import { useT } from "@/lib/language";
 
 export const Route = createFileRoute("/logistics")({
@@ -126,12 +127,23 @@ function Logistics() {
 
   return (
     <div>
-      <header className="mx-auto max-w-6xl px-5 py-14">
-        <p className="eyebrow">{t.delivery}</p>
-        <h1 className="stencil mt-3 max-w-3xl text-3xl font-medium text-primary sm:text-5xl">
-          {t.title}
-        </h1>
-        <p className="mt-5 max-w-2xl text-muted-foreground">{t.intro}</p>
+      <header className="mx-auto max-w-6xl px-5 py-14 sm:py-20">
+        <div className="grid items-center gap-10 md:grid-cols-[1.1fr_0.9fr]">
+          <div>
+            <p className="eyebrow">{t.delivery}</p>
+            <h1 className="mt-3 max-w-lg text-4xl font-normal tracking-[-0.02em] text-primary sm:text-5xl">
+              {t.title}
+            </h1>
+            <p className="mt-5 max-w-lg text-muted-foreground">{t.intro}</p>
+          </div>
+          <div className="overflow-hidden rounded-xl">
+            <img
+              src={packhouseImg}
+              alt="Conditionnement des avocats Hass au packhouse Sokoni Export avant expédition"
+              className="aspect-[4/3] w-full object-cover"
+            />
+          </div>
+        </div>
       </header>
 
       <section className="mx-auto max-w-6xl px-5 pb-16">
@@ -184,7 +196,7 @@ function Logistics() {
             width={1600}
             height={1200}
             loading="lazy"
-            className="aspect-[4/3] w-full object-cover"
+            className="aspect-[4/3] w-full rounded-xl object-cover"
           />
           <div>
             <h2 className="eyebrow">{t.coldChain}</h2>

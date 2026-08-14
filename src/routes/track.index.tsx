@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { useSession } from "@/lib/app-context";
 import { useT } from "@/lib/language";
 import { Link } from "@tanstack/react-router";
+import trackImg from "@/assets/farmer-portrait.jpg";
 
 export const Route = createFileRoute("/track/")({
   head: () => ({
@@ -63,49 +64,62 @@ function TrackEntry() {
   const t = useT(COPY);
 
   return (
-    <div className="mx-auto max-w-2xl px-5 py-24">
-      <p className="eyebrow">{t.traceability}</p>
-      <h1 className="stencil mt-3 text-3xl font-medium text-primary sm:text-4xl">{t.title}</h1>
-      <p className="mt-4 text-muted-foreground">{t.intro}</p>
+    <div className="mx-auto max-w-6xl px-5 py-14 sm:py-20">
+      <div className="grid gap-10 md:grid-cols-[1fr_0.8fr] md:items-center">
+        <div className="max-w-2xl">
+          <p className="eyebrow">{t.traceability}</p>
+          <h1 className="mt-3 text-4xl font-normal tracking-[-0.02em] text-primary sm:text-4xl">
+            {t.title}
+          </h1>
+          <p className="mt-4 text-muted-foreground">{t.intro}</p>
 
-      <form
-        className="mt-8 flex flex-col gap-3 sm:flex-row"
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (code.trim()) navigate({ to: "/track/$code", params: { code: code.trim() } });
-        }}
-      >
-        <Input
-          value={code}
-          onChange={(e) => setCode(e.target.value)}
-          placeholder="SKN-2026-0148"
-          aria-label={t.trackingCode}
-          className="font-mono"
-        />
-        <Button type="submit" variant="cta">
-          {t.track}
-          <ArrowRight className="size-4" />
-        </Button>
-      </form>
+          <form
+            className="mt-8 flex flex-col gap-3 sm:flex-row"
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (code.trim()) navigate({ to: "/track/$code", params: { code: code.trim() } });
+            }}
+          >
+            <Input
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              placeholder="SKN-2026-0148"
+              aria-label={t.trackingCode}
+              className="font-mono"
+            />
+            <Button type="submit" variant="cta">
+              {t.track}
+              <ArrowRight className="size-4" />
+            </Button>
+          </form>
 
-      <div className="mt-10 rule-top pt-6 text-sm text-muted-foreground">
-        {user ? (
-          <>
-            {t.signedInPre}{" "}
-            <Link to="/dashboard" className="text-clay underline underline-offset-4">
-              {t.seeAllOrders}
-            </Link>
-            .
-          </>
-        ) : (
-          <>
-            {t.multipleShipments}{" "}
-            <Link to="/auth" className="text-clay underline underline-offset-4">
-              {t.signIn}
-            </Link>{" "}
-            {t.signInSuffix}
-          </>
-        )}
+          <div className="mt-10 rule-top pt-6 text-sm text-muted-foreground">
+            {user ? (
+              <>
+                {t.signedInPre}{" "}
+                <Link to="/dashboard" className="text-clay underline underline-offset-4">
+                  {t.seeAllOrders}
+                </Link>
+                .
+              </>
+            ) : (
+              <>
+                {t.multipleShipments}{" "}
+                <Link to="/auth" className="text-clay underline underline-offset-4">
+                  {t.signIn}
+                </Link>{" "}
+                {t.signInSuffix}
+              </>
+            )}
+          </div>
+        </div>
+        <div className="hidden overflow-hidden rounded-xl md:block">
+          <img
+            src={trackImg}
+            alt="Producteur certifié Sokoni Export, Murang'a, Kenya"
+            className="aspect-[4/3] w-full object-cover"
+          />
+        </div>
       </div>
     </div>
   );

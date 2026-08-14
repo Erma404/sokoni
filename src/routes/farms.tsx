@@ -317,18 +317,15 @@ function Farms() {
               i % 2 === 1 ? "md:[&>figure]:order-2" : ""
             }`}
           >
-            <figure className="flex justify-center">
-              <div className="relative">
-                <div aria-hidden className="absolute -inset-4 rounded-full border border-clay/30" />
-                <img
-                  src={FARM_IMAGES[i]}
-                  alt={`${f.name} in ${f.region}`}
-                  width={900}
-                  height={900}
-                  loading="lazy"
-                  className="mask-circle aspect-square w-full max-w-xs object-cover"
-                />
-              </div>
+            <figure className="overflow-hidden rounded-xl">
+              <img
+                src={FARM_IMAGES[i]}
+                alt={`${f.name} in ${f.region}`}
+                width={900}
+                height={900}
+                loading="lazy"
+                className="aspect-[4/3] w-full object-cover"
+              />
             </figure>
 
             <div>

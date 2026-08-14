@@ -146,15 +146,26 @@ function Catalog() {
 
   return (
     <div className="mx-auto max-w-6xl px-5 py-14">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <p className="eyebrow">{t.seasonHass}</p>
-          <h1 className="stencil mt-3 text-3xl font-medium text-primary sm:text-4xl">{t.title}</h1>
-          <p className="mt-4 max-w-2xl text-muted-foreground">{t.intro(MIN_ORDER_KG)}</p>
+      <div className="grid items-center gap-8 md:grid-cols-[1.2fr_0.8fr]">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <p className="eyebrow">{t.seasonHass}</p>
+            <h1 className="mt-3 text-4xl font-normal tracking-[-0.02em] text-primary sm:text-4xl">
+              {t.title}
+            </h1>
+            <p className="mt-4 max-w-2xl text-muted-foreground">{t.intro(MIN_ORDER_KG)}</p>
+            <Link to="/sample-request" className="mt-5 inline-block">
+              <Button variant="outline">{t.requestSample}</Button>
+            </Link>
+          </div>
         </div>
-        <Link to="/sample-request" className="shrink-0">
-          <Button variant="outline">{t.requestSample}</Button>
-        </Link>
+        <div className="hidden overflow-hidden rounded-xl md:block">
+          <img
+            src={packhouseImg}
+            alt="Conditionnement des avocats Hass au packhouse Sokoni Export"
+            className="aspect-[4/3] w-full object-cover"
+          />
+        </div>
       </div>
 
       {/* Filters */}

@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import contactImg from "@/assets/farm-manager-portrait.jpg";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -125,22 +126,36 @@ function ContactPage() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl px-5 py-14">
-      <p className="eyebrow">{t.getInTouch}</p>
-      <h1 className="stencil mt-3 text-3xl font-medium text-primary sm:text-4xl">{t.title}</h1>
-      <p className="mt-4 text-muted-foreground">
-        {t.introPre}{" "}
-        <Link to="/rfq" className="text-clay underline underline-offset-4">
-          {t.requestQuote}
-        </Link>
-        {t.introMid}{" "}
-        <Link to="/sample-request" className="text-clay underline underline-offset-4">
-          {t.requestSample}
-        </Link>
-        {t.introPost}
-      </p>
+    <div className="mx-auto max-w-6xl px-5 py-14">
+      <div className="grid gap-10 md:grid-cols-[1fr_0.8fr] md:items-center">
+        <div>
+          <p className="eyebrow">{t.getInTouch}</p>
+          <h1 className="mt-3 text-4xl font-normal tracking-[-0.02em] text-primary sm:text-4xl">
+            {t.title}
+          </h1>
+          <p className="mt-4 max-w-md text-muted-foreground">
+            {t.introPre}{" "}
+            <Link to="/rfq" className="text-clay underline underline-offset-4">
+              {t.requestQuote}
+            </Link>
+            {t.introMid}{" "}
+            <Link to="/sample-request" className="text-clay underline underline-offset-4">
+              {t.requestSample}
+            </Link>
+            {t.introPost}
+          </p>
+        </div>
+        <div className="hidden overflow-hidden rounded-xl md:block">
+          <img
+            src={contactImg}
+            alt="Responsable ferme partenaire Sokoni Export, Murang'a, Kenya"
+            className="aspect-[4/3] w-full object-cover"
+            style={{ objectPosition: "center 25%" }}
+          />
+        </div>
+      </div>
 
-      <form className="mt-10 space-y-4" onSubmit={submit}>
+      <form className="mt-10 max-w-2xl space-y-4" onSubmit={submit}>
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label={t.name} required>
             <Input
