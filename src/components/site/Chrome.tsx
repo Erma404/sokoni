@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Menu, X } from "lucide-react";
+import { ArrowUpRight, Menu, X } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useRfq, useSession } from "@/lib/app-context";
@@ -27,6 +27,7 @@ const COPY = {
     rfqCart: "Panier de devis",
     footerTagline:
       "Avocat Hass en commerce direct depuis des fermes kenyanes certifiées jusqu'au marché de gros de Rungis, Paris.",
+    footerHeadline: "Restons en contact",
     trade: "Commerce",
     catalog: "Catalogue",
     requestQuote: "Demander un devis",
@@ -48,6 +49,7 @@ const COPY = {
     rfqCart: "RFQ cart",
     footerTagline:
       "Direct-trade Hass avocado from certified Kenyan farms to the Rungis wholesale market, Paris.",
+    footerHeadline: "Let's stay in touch",
     trade: "Trade",
     catalog: "Catalog",
     requestQuote: "Request a quote",
@@ -106,7 +108,7 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5">
+      <div className="mx-auto grid h-20 max-w-6xl grid-cols-[auto_1fr_auto] items-center gap-4 px-5">
         <Link
           to="/"
           aria-label="Sokoni Export home"
@@ -115,65 +117,75 @@ export function Header() {
           <Wordmark />
         </Link>
 
-        <nav className="hidden items-center gap-7 md:flex">
+        <nav className="hidden items-center justify-center gap-8 md:flex">
           {NAV.map((item) => (
             <Link
               key={item.to}
               to={item.to}
-              className="rounded-full bg-secondary/70 px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
-              activeProps={{ className: "text-primary" }}
+              className="text-sm text-foreground/70 transition-colors hover:text-primary"
+              activeProps={{ className: "text-primary font-medium" }}
             >
               {item.label[lang]}
             </Link>
           ))}
         </nav>
 
-        <div className="hidden items-center gap-2 md:flex">
-          <LanguageSwitch className="mr-1" />
-          <Link to="/contact">
-            <Button variant="clay" size="sm" className="stencil">
-              {t.contact}
-            </Button>
-          </Link>
-          <Link to="/rfq">
-            <Button variant="ghost" size="sm" className="stencil">
-              {t.rfq}
-              <span
-                className={cn(
-                  "ml-1 rounded-full px-1.5 py-0.5 text-[0.65rem] font-semibold",
-                  count > 0 ? "bg-clay text-clay-foreground" : "bg-muted text-muted-foreground",
-                )}
-              >
-                {count}
-              </span>
-            </Button>
+        <div className="hidden items-center justify-end gap-4 md:flex">
+          <LanguageSwitch />
+          <Link
+            to="/rfq"
+            className="flex items-center gap-1 text-sm text-foreground/70 transition-colors hover:text-primary"
+          >
+            {t.rfq}
+            <span
+              className={cn(
+                "flex size-4 items-center justify-center rounded-full text-[0.6rem] font-semibold",
+                count > 0 ? "bg-clay text-clay-foreground" : "bg-muted text-muted-foreground",
+              )}
+            >
+              {count}
+            </span>
           </Link>
           {isAdmin && (
-            <Link to="/admin">
-              <Button variant="ghost" size="sm">
-                {t.backOffice}
-              </Button>
+            <Link
+              to="/admin"
+              className="text-sm text-foreground/70 transition-colors hover:text-primary"
+            >
+              {t.backOffice}
             </Link>
           )}
           {user ? (
             <>
-              <Link to="/dashboard">
-                <Button variant="outline" size="sm">
-                  {t.myOrders}
-                </Button>
+              <Link
+                to="/dashboard"
+                className="text-sm text-foreground/70 transition-colors hover:text-primary"
+              >
+                {t.myOrders}
               </Link>
-              <Button variant="ghost" size="sm" onClick={signOut}>
+              <button
+                onClick={signOut}
+                className="text-sm text-foreground/70 transition-colors hover:text-primary"
+              >
                 {t.signOut}
-              </Button>
+              </button>
             </>
           ) : (
-            <Link to="/auth">
-              <Button size="sm">{t.signIn}</Button>
+            <Link
+              to="/auth"
+              className="text-sm text-foreground/70 transition-colors hover:text-primary"
+            >
+              {t.signIn}
             </Link>
           )}
+          <Link to="/rfq">
+            <span className="stencil inline-flex items-center gap-1.5 rounded-full bg-primary px-5 py-2.5 text-xs font-bold text-primary-foreground transition-colors hover:bg-primary/90">
+              {t.requestQuote}
+              <ArrowUpRight className="size-3.5" />
+            </span>
+          </Link>
         </div>
 
-        <div className="flex items-center gap-3 md:hidden">
+        <div className="col-start-3 flex items-center gap-3 md:hidden">
           <LanguageSwitch />
           <button className="shrink-0" onClick={() => setOpen((v) => !v)} aria-label={t.toggleNav}>
             {open ? <X className="size-5" /> : <Menu className="size-5" />}
@@ -233,48 +245,83 @@ export function Header() {
 export function Footer() {
   const t = useT(COPY);
   return (
-    <footer className="relative mt-24 overflow-hidden border-t border-border bg-primary text-primary-foreground">
-      <div className="relative mx-auto grid max-w-6xl gap-10 px-5 py-14 sm:grid-cols-3">
-        <div>
-          <Wordmark tone="invert" />
+    <footer className="mt-3 bg-background">
+      <div className="mx-auto max-w-[1800px] px-3 sm:px-5 lg:px-8">
+        <div className="rounded-xl bg-[#f4f4f2] px-[7%] py-16 sm:py-20">
+          <div className="grid gap-12 lg:grid-cols-[1fr_1.4fr] lg:gap-8">
+            <div className="text-center lg:text-left">
+              <span className="inline-block">
+                <Wordmark />
+              </span>
+              <h2
+                className="mt-6 text-4xl font-normal tracking-[-0.03em] text-[#142b21] sm:text-5xl"
+                style={{ fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif' }}
+              >
+                {t.footerHeadline}
+              </h2>
+              <p className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-[#44554a] lg:mx-0">
+                {t.footerTagline}
+              </p>
+              <Link to="/rfq" className="mt-6 inline-block">
+                <span className="inline-flex items-center gap-2 rounded-full bg-[#72c635] px-6 py-3 text-sm font-bold text-[#173d26]">
+                  {t.requestQuote}
+                  <ArrowUpRight className="size-3.5" />
+                </span>
+              </Link>
+            </div>
 
-          <p className="mt-3 max-w-xs text-sm text-primary-foreground/70">{t.footerTagline}</p>
-        </div>
-        <div className="text-sm">
-          <div className="eyebrow text-primary-foreground/60">{t.trade}</div>
-          <ul className="mt-3 space-y-2 text-primary-foreground/80">
-            <li>
-              <Link to="/catalog">{t.catalog}</Link>
-            </li>
-            <li>
-              <Link to="/rfq">{t.requestQuote}</Link>
-            </li>
-            <li>
-              <Link to="/sample-request">{t.requestSample}</Link>
-            </li>
-            <li>
-              <Link to="/logistics">{t.incoterms}</Link>
-            </li>
-            <li>
-              <Link to="/contact">{t.contact}</Link>
-            </li>
-          </ul>
-        </div>
-        <div className="text-sm">
-          <div className="eyebrow text-primary-foreground/60">{t.origin}</div>
-          <ul className="mt-3 space-y-2 text-primary-foreground/80">
-            <li>
-              <Link to="/farms">{t.farmsQuality}</Link>
-            </li>
-            <li>
-              <Link to="/track">{t.trackShipment}</Link>
-            </li>
-          </ul>
-        </div>
-      </div>
-      <div className="relative border-t border-primary-foreground/15">
-        <div className="mx-auto max-w-6xl px-5 py-5 text-xs text-primary-foreground/50">
-          © {new Date().getFullYear()} Sokoni Export — {t.copyright}
+            <div className="grid grid-cols-2 gap-8 sm:grid-cols-2">
+              <div className="text-sm">
+                <div className="stencil text-xs text-[#142b21]">{t.trade}</div>
+                <ul className="mt-4 space-y-2.5 text-[#44554a]">
+                  <li>
+                    <Link to="/catalog" className="hover:text-primary">
+                      {t.catalog}
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/rfq" className="hover:text-primary">
+                      {t.requestQuote}
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/sample-request" className="hover:text-primary">
+                      {t.requestSample}
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/logistics" className="hover:text-primary">
+                      {t.incoterms}
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/contact" className="hover:text-primary">
+                      {t.contact}
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+              <div className="text-sm">
+                <div className="stencil text-xs text-[#142b21]">{t.origin}</div>
+                <ul className="mt-4 space-y-2.5 text-[#44554a]">
+                  <li>
+                    <Link to="/farms" className="hover:text-primary">
+                      {t.farmsQuality}
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/track" className="hover:text-primary">
+                      {t.trackShipment}
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-12 border-t border-[#d5d5cf] pt-6 text-center text-xs text-[#526158]">
+            © {new Date().getFullYear()} Sokoni Export — {t.copyright}
+          </div>
         </div>
       </div>
     </footer>

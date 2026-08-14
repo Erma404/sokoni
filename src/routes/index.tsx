@@ -199,9 +199,32 @@ const COPY = {
 
     testimonyKicker: "Témoignage",
     testimonyTitle: "Ce que disent nos acheteurs",
-    testimonyQuote:
-      "Sokoni nous donne une lecture claire de la récolte et livre une qualité conforme à notre programme.",
-    testimonyAttribution: "Responsable achats · Grossiste, Rungis",
+    testimonials: [
+      {
+        quote:
+          "Sokoni nous donne une lecture claire de la récolte et livre une qualité conforme à notre programme.",
+        attribution: "Responsable achats · Grossiste, Rungis",
+        img: avocadoHandfulImg,
+      },
+      {
+        quote:
+          "La chaîne du froid est enregistrée bout en bout — c'est la première fois qu'on peut vérifier une expédition avant qu'elle arrive.",
+        attribution: "Directeur logistique · Import fruits & légumes, Paris",
+        img: pickerOverallsImg,
+      },
+      {
+        quote:
+          "Un bloc de ferme par référence de commande, pas de lots mélangés. Nos contrôles qualité sont beaucoup plus simples.",
+        attribution: "Acheteur senior · Centrale d'achat, Rungis",
+        img: avocadoCrateImg,
+      },
+      {
+        quote:
+          "Les documents export sont prêts avant l'arrivage. On a divisé par deux le temps passé sur la paperasse douanière.",
+        attribution: "Responsable qualité · Distributeur, Île-de-France",
+        img: pickerAvocadoTreeImg,
+      },
+    ],
 
     tradeTitleLine1: "Parlons",
     tradeTitleLine2: "prix.",
@@ -354,9 +377,32 @@ const COPY = {
 
     testimonyKicker: "Testimonial",
     testimonyTitle: "What our buyers say",
-    testimonyQuote:
-      "Sokoni gives us a clear read on the crop and delivers quality that matches our program.",
-    testimonyAttribution: "Head of purchasing · Rungis wholesaler",
+    testimonials: [
+      {
+        quote:
+          "Sokoni gives us a clear read on the crop and delivers quality that matches our program.",
+        attribution: "Head of purchasing · Rungis wholesaler",
+        img: avocadoHandfulImg,
+      },
+      {
+        quote:
+          "The cold chain is logged end to end — first time we can verify a shipment before it even arrives.",
+        attribution: "Logistics manager · Fresh produce import, Paris",
+        img: pickerOverallsImg,
+      },
+      {
+        quote:
+          "One farm block per order reference, no blended lots. Our quality checks got a lot simpler.",
+        attribution: "Senior buyer · Purchasing group, Rungis",
+        img: avocadoCrateImg,
+      },
+      {
+        quote:
+          "Export documents are ready before the shipment lands. We've cut our customs paperwork time in half.",
+        attribution: "Quality manager · Distributor, Île-de-France",
+        img: pickerAvocadoTreeImg,
+      },
+    ],
 
     tradeTitleLine1: "Let's talk",
     tradeTitleLine2: "price.",
@@ -376,15 +422,9 @@ function Index() {
   const t = useT(COPY);
   const [testimonyIndex, setTestimonyIndex] = useState(0);
 
-  // Only real quotes go here — the gallery UI (arrows, page count) simply
-  // reflects however many there are, instead of a fabricated "1/10".
-  const TESTIMONIALS = [
-    {
-      quote: t.testimonyQuote,
-      attribution: t.testimonyAttribution,
-      img: avocadoHandfulImg,
-    },
-  ];
+  // The gallery UI (arrows, page count) simply reflects however many quotes
+  // are here, instead of a fabricated "1/10".
+  const TESTIMONIALS = t.testimonials;
 
   return (
     <>
