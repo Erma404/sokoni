@@ -327,7 +327,7 @@ export function Footer() {
 
           {/* Decorative bookend photos, framing the divider before the copyright line */}
           <div className="mt-12 flex items-center gap-4 sm:gap-6">
-            <div className="mask-leaf hidden size-16 shrink-0 sm:block sm:size-20">
+            <div className="mask-avocado hidden size-16 shrink-0 sm:block sm:size-20">
               <img
                 src={avocadoHandfulImg}
                 alt=""
@@ -336,7 +336,7 @@ export function Footer() {
               />
             </div>
             <div className="h-px flex-1 bg-[#d5d5cf]" />
-            <div className="mask-leaf hidden size-16 shrink-0 sm:block sm:size-20">
+            <div className="mask-avocado hidden size-16 shrink-0 sm:block sm:size-20">
               <img
                 src={avocadoCrateImg}
                 alt=""

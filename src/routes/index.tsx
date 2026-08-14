@@ -438,7 +438,7 @@ function Index() {
               className="flex flex-col items-center justify-center rounded-xl bg-[#edf7ee] px-8 py-14 text-center sm:px-12"
               style={{ fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif' }}
             >
-              <span className="mb-4 rounded-[14px] bg-[#e0f4e0] px-2.5 py-1.5 text-[9px] font-bold tracking-[0.1em] text-[#5b7761]">
+              <span className="mb-4 rounded-[14px] bg-[#e0f4e0] px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-[0.1em] text-[#5b7761]">
                 {t.heroEyebrow}
               </span>
               <h1 className="text-[38px] font-normal leading-[0.88] tracking-[-0.08em] text-[#142b21] sm:text-[56px] lg:text-[70px]">
@@ -558,7 +558,7 @@ function Index() {
 
         <div className="relative z-[1] mx-auto max-w-[650px]">
           <span
-            className="mb-4 inline-block rounded-[13px] border border-[#79a16f] px-2.5 py-1 text-[9px] tracking-[0.02em] text-[#245640]"
+            className="mb-4 inline-block rounded-[13px] border border-[#79a16f] px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.05em] text-[#245640]"
             style={{ fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif' }}
           >
             {t.aboutKicker}
@@ -601,7 +601,7 @@ function Index() {
             style={{ fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif' }}
           >
             <div className="text-center">
-              <span className="inline-block rounded-[13px] border border-[#75a46e] px-2.5 py-1 text-[10px] tracking-[0.02em] text-[#174e37]">
+              <span className="inline-block rounded-[13px] border border-[#75a46e] px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.05em] text-[#174e37]">
                 {t.picksKicker}
               </span>
               <h2 className="mb-8 mt-4 text-[34px] font-normal tracking-[-0.04em] text-[#142b21] sm:text-[46px] lg:text-[56px]">
@@ -664,7 +664,7 @@ function Index() {
         <div className="mx-auto max-w-[1800px] px-3 sm:px-5 lg:px-8">
           <div className="rounded-xl bg-[#eff8f0] px-[7%] py-16 sm:py-20 lg:py-24">
             <div className="text-center">
-              <span className="inline-block rounded-[13px] border border-[#79a16f] px-2.5 py-1 text-[10px] tracking-[0.02em] text-[#245640]">
+              <span className="inline-block rounded-[13px] border border-[#79a16f] px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.05em] text-[#245640]">
                 {t.whyKicker}
               </span>
               <h2 className="mb-10 mt-4 text-[32px] font-normal tracking-[-0.03em] text-[#142b21] sm:text-[42px] lg:text-[48px]">

@@ -5,9 +5,10 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Sokoni Export design system — bento/card direction (sokoni-hero-banner.html).
+ * Sokoni Export design system — matches sokoni-hero-banner.html exactly.
  * Palette: deep forest green, terracotta clay, ochre, warm neutrals on white.
- * Type: Outfit (rounded, modern sans) throughout.
+ * Type: two fonts only — Georgia (logo lockup only) + Helvetica Neue/Arial
+ * (everything else). No third typeface anywhere on the site.
  */
 
 @theme inline {
@@ -17,8 +18,8 @@
   --radius-xl: calc(var(--radius) + 12px);
   --radius-2xl: calc(var(--radius) + 20px);
 
-  --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-display: "Helvetica Neue", Helvetica, Arial, sans-serif;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -161,7 +162,7 @@
   font-size: 0.6875rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  font-weight: 500;
+  font-weight: 700;
   color: var(--color-muted-foreground);
 }
 
@@ -182,6 +183,12 @@
 
 @utility mask-leaf {
   border-radius: 9999px 2rem 9999px 2rem;
+  overflow: hidden;
+}
+
+/* Avocado silhouette: narrower stem end at top, bulbous base at bottom. */
+@utility mask-avocado {
+  border-radius: 46% 46% 54% 54% / 40% 40% 60% 60%;
   overflow: hidden;
 }
 
