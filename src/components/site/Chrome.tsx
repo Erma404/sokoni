@@ -123,12 +123,12 @@ export function Header() {
           <Wordmark />
         </Link>
 
-        <nav className="hidden items-center justify-center gap-2 md:flex">
+        <nav className="hidden items-center justify-center gap-2 xl:flex">
           {NAV.map((item) => (
             <Link
               key={item.to}
               to={item.to}
-              className="rounded-full bg-[#f6f8f7] px-3.5 py-2 text-sm text-[#44554a] transition-colors hover:text-[#0a4934]"
+              className="whitespace-nowrap rounded-full bg-[#f6f8f7] px-3.5 py-2 text-sm text-[#44554a] transition-colors hover:text-[#0a4934]"
               activeProps={{ className: "text-[#0a4934] font-semibold" }}
             >
               {item.label[lang]}
@@ -136,7 +136,7 @@ export function Header() {
           ))}
         </nav>
 
-        <div className="hidden items-center justify-end gap-4 md:flex">
+        <div className="hidden items-center justify-end gap-4 whitespace-nowrap xl:flex">
           <LanguageSwitch />
           <Link
             to="/rfq"
@@ -191,7 +191,7 @@ export function Header() {
           </Link>
         </div>
 
-        <div className="col-start-3 flex items-center gap-3 md:hidden">
+        <div className="col-start-3 flex items-center gap-3 xl:hidden">
           <LanguageSwitch />
           <button className="shrink-0" onClick={() => setOpen((v) => !v)} aria-label={t.toggleNav}>
             {open ? <X className="size-5" /> : <Menu className="size-5" />}
@@ -200,7 +200,7 @@ export function Header() {
       </div>
 
       {open && (
-        <div className="border-t border-[#e5e5e0] bg-white px-5 py-4 md:hidden">
+        <div className="border-t border-[#e5e5e0] bg-white px-5 py-4 xl:hidden">
           <div className="flex flex-col gap-3">
             {NAV.map((item) => (
               <Link
