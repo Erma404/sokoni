@@ -2,17 +2,35 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Copy } from "lucide-react";
+import { Copy, Package, PackageCheck, Truck, Warehouse } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/lib/app-context";
 import { STAGES, stageIndex } from "@/lib/checkpoints";
 import { useLanguage, useT } from "@/lib/language";
-import { StatusBadge } from "@/components/tracking/StatusBadge";
-import { shortDate } from "@/lib/format";
+import { statusLabel } from "@/lib/checkpoints";
+import { shortDate, dateTime } from "@/lib/format";
+import { AdminShell } from "@/components/admin/AdminShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { PdfLogoSettings } from "@/components/admin/PdfLogoSettings";
 
 export const Route = createFileRoute("/admin")({
@@ -37,11 +55,18 @@ const COPY = {
     loading: "Chargement…",
     signInRequired: "Connectez-vous avec un compte de l'équipe Sokoni pour ouvrir le back office.",
     restricted: "Cette zone est réservée à l'équipe Sokoni.",
-    internal: "Interne",
     backOffice: "Back office",
+    overview: "Vue d'ensemble des commandes et de la traçabilité",
+    statTotal: "Commandes",
+    statProcessing: "En traitement",
+    statTransit: "En transit",
+    statDelivered: "Livrées",
     pdfLogo: "Logo des documents PDF",
     newOrder: "Nouvelle commande",
+    newOrderDesc: "Enregistre une commande et génère son lien de suivi transitaire.",
     orders: "Commandes",
+    ordersDesc: "Cliquez une ligne pour ouvrir le détail et enregistrer une étape.",
+    noOrders: "Aucune commande pour le moment.",
     copyForwarderLink: "Copier le lien transitaire",
     forwarderLinkCopied: "Lien transitaire copié",
     cartons: "cartons",
@@ -68,16 +93,30 @@ const COPY = {
     logging: "Enregistrement…",
     logCheckpoint: "Enregistrer l'étape",
     checkpointLogged: "Étape enregistrée — la timeline de l'acheteur est mise à jour",
+    colCode: "Code",
+    colClient: "Client",
+    colProduct: "Produit",
+    colCartons: "Cartons",
+    colStatus: "Statut",
+    colCreated: "Créée",
+    created: "Créée",
   },
   en: {
     loading: "Loading…",
     signInRequired: "Sign in with a Sokoni team account to open the back office.",
     restricted: "This area is restricted to the Sokoni team.",
-    internal: "Internal",
     backOffice: "Back office",
+    overview: "Orders and traceability overview",
+    statTotal: "Orders",
+    statProcessing: "Processing",
+    statTransit: "In transit",
+    statDelivered: "Delivered",
     pdfLogo: "PDF document logo",
     newOrder: "New order",
+    newOrderDesc: "Records an order and generates its forwarder tracking link.",
     orders: "Orders",
+    ordersDesc: "Click a row to open the detail and log a checkpoint.",
+    noOrders: "No orders yet.",
     copyForwarderLink: "Copy forwarder link",
     forwarderLinkCopied: "Forwarder link copied",
     cartons: "cartons",
@@ -104,6 +143,13 @@ const COPY = {
     logging: "Logging…",
     logCheckpoint: "Log checkpoint",
     checkpointLogged: "Checkpoint logged — buyer timeline updated",
+    colCode: "Code",
+    colClient: "Client",
+    colProduct: "Product",
+    colCartons: "Cartons",
+    colStatus: "Status",
+    colCreated: "Created",
+    created: "Created",
   },
 };
 
@@ -121,10 +167,17 @@ interface AdminOrder {
   created_at: string;
 }
 
+function statusBadgeVariant(status: string): "default" | "secondary" | "outline" {
+  if (status === "delivered") return "default";
+  if (status === "in_transit") return "secondary";
+  return "outline";
+}
+
 function Admin() {
   const { isAdmin, loading, user } = useSession();
+  const { lang } = useLanguage();
   const queryClient = useQueryClient();
-  const [selected, setSelected] = useState<string | null>(null);
+  const [selected, setSelected] = useState<AdminOrder | null>(null);
   const t = useT(COPY);
 
   const { data: orders = [] } = useQuery({
@@ -153,69 +206,182 @@ function Admin() {
     };
   }, [isAdmin, queryClient]);
 
-  if (loading) return <Note>{t.loading}</Note>;
-  if (!user) return <Note>{t.signInRequired}</Note>;
-  if (!isAdmin) return <Note>{t.restricted}</Note>;
+  if (loading || !user || !isAdmin) {
+    return (
+      <AdminShell>
+        <p className="mx-auto max-w-md py-24 text-center text-sm text-muted-foreground">
+          {loading ? t.loading : !user ? t.signInRequired : t.restricted}
+        </p>
+      </AdminShell>
+    );
+  }
+
+  const stats = {
+    total: orders.length,
+    processing: orders.filter((o) => o.status === "processing").length,
+    inTransit: orders.filter((o) => o.status === "in_transit").length,
+    delivered: orders.filter((o) => o.status === "delivered").length,
+  };
+
+  // Keep the detail dialog's data in sync as realtime updates come in.
+  const liveSelected = selected ? (orders.find((o) => o.id === selected.id) ?? null) : null;
 
   return (
-    <div className="mx-auto max-w-6xl px-5 py-14">
-      <p className="eyebrow">{t.internal}</p>
-      <h1 className="stencil mt-3 text-3xl font-medium text-primary sm:text-4xl">{t.backOffice}</h1>
-
-      <div className="mt-10 grid gap-12 lg:grid-cols-[1fr_1fr]">
-        <section>
-          <h2 className="eyebrow mb-4">{t.pdfLogo}</h2>
-          <PdfLogoSettings />
-
-          <h2 className="eyebrow mb-4 mt-10">{t.newOrder}</h2>
-          <NewOrderForm
-            onCreated={() => queryClient.invalidateQueries({ queryKey: ["admin-orders"] })}
-          />
-        </section>
-
-        <section>
-          <h2 className="eyebrow mb-4">{t.orders}</h2>
-          <ul className="divide-y divide-border border-y border-border">
-            {orders.map((o) => (
-              <li key={o.id} className="py-4">
-                <div className="flex flex-wrap items-center gap-3">
-                  <button
-                    className="stencil flex-1 text-left text-sm font-medium hover:text-clay"
-                    onClick={() => setSelected(o.id === selected ? null : o.id)}
-                  >
-                    {o.tracking_code}
-                  </button>
-                  <StatusBadge status={o.status} />
-                </div>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  {o.buyer_company ?? "—"} · {o.quantity_cartons} {t.cartons} ·{" "}
-                  {shortDate(o.created_at)}
-                </p>
-                <button
-                  className="mt-1 inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-clay"
-                  onClick={() => {
-                    void navigator.clipboard.writeText(
-                      `${window.location.origin}/forwarder/${o.forwarder_token}`,
-                    );
-                    toast.success(t.forwarderLinkCopied);
-                  }}
-                >
-                  <Copy className="size-3" /> {t.copyForwarderLink}
-                </button>
-
-                {selected === o.id && <CheckpointForm order={o} />}
-              </li>
-            ))}
-          </ul>
-        </section>
+    <AdminShell>
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">{t.backOffice}</h1>
+          <p className="mt-1 text-sm text-muted-foreground">{t.overview}</p>
+        </div>
       </div>
-    </div>
+
+      <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <StatCard icon={Package} label={t.statTotal} value={stats.total} />
+        <StatCard icon={Warehouse} label={t.statProcessing} value={stats.processing} />
+        <StatCard icon={Truck} label={t.statTransit} value={stats.inTransit} />
+        <StatCard icon={PackageCheck} label={t.statDelivered} value={stats.delivered} />
+      </div>
+
+      <div className="mt-6 grid gap-6 lg:grid-cols-[380px_1fr]">
+        <div className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">{t.pdfLogo}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <PdfLogoSettings />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">{t.newOrder}</CardTitle>
+              <CardDescription>{t.newOrderDesc}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <NewOrderForm
+                onCreated={() => queryClient.invalidateQueries({ queryKey: ["admin-orders"] })}
+              />
+            </CardContent>
+          </Card>
+        </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">{t.orders}</CardTitle>
+            <CardDescription>{t.ordersDesc}</CardDescription>
+          </CardHeader>
+          <CardContent className="p-0">
+            {orders.length === 0 ? (
+              <p className="px-6 pb-6 text-sm text-muted-foreground">{t.noOrders}</p>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>{t.colCode}</TableHead>
+                    <TableHead>{t.colClient}</TableHead>
+                    <TableHead className="hidden md:table-cell">{t.colProduct}</TableHead>
+                    <TableHead className="hidden sm:table-cell text-right">
+                      {t.colCartons}
+                    </TableHead>
+                    <TableHead>{t.colStatus}</TableHead>
+                    <TableHead className="hidden lg:table-cell">{t.colCreated}</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {orders.map((o) => (
+                    <TableRow key={o.id} className="cursor-pointer" onClick={() => setSelected(o)}>
+                      <TableCell className="font-mono text-xs font-medium">
+                        {o.tracking_code}
+                      </TableCell>
+                      <TableCell className="max-w-[160px] truncate">
+                        {o.buyer_company ?? "—"}
+                      </TableCell>
+                      <TableCell className="hidden max-w-[220px] truncate text-muted-foreground md:table-cell">
+                        {o.product_summary}
+                      </TableCell>
+                      <TableCell className="hidden sm:table-cell text-right tabular-nums">
+                        {o.quantity_cartons}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={statusBadgeVariant(o.status)}>
+                          {statusLabel(o.status, lang)}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="hidden text-muted-foreground lg:table-cell">
+                        {shortDate(o.created_at)}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      <Dialog open={!!liveSelected} onOpenChange={(open) => !open && setSelected(null)}>
+        <DialogContent className="max-h-[85vh] max-w-xl overflow-y-auto">
+          {liveSelected && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2 font-mono text-base">
+                  {liveSelected.tracking_code}
+                  <Badge variant={statusBadgeVariant(liveSelected.status)}>
+                    {statusLabel(liveSelected.status, lang)}
+                  </Badge>
+                </DialogTitle>
+                <DialogDescription>
+                  {liveSelected.buyer_company ?? "—"} · {liveSelected.quantity_cartons} {t.cartons}{" "}
+                  · {dateTime(liveSelected.created_at)}
+                </DialogDescription>
+              </DialogHeader>
+
+              <button
+                type="button"
+                className="inline-flex w-fit items-center gap-1.5 text-xs text-muted-foreground hover:text-primary"
+                onClick={() => {
+                  void navigator.clipboard.writeText(
+                    `${window.location.origin}/forwarder/${liveSelected.forwarder_token}`,
+                  );
+                  toast.success(t.forwarderLinkCopied);
+                }}
+              >
+                <Copy className="size-3" /> {t.copyForwarderLink}
+              </button>
+
+              <CheckpointForm order={liveSelected} />
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+    </AdminShell>
   );
 }
 
-function Note({ children }: { children: React.ReactNode }) {
+function StatCard({
+  icon: Icon,
+  label,
+  value,
+}: {
+  icon: typeof Package;
+  label: string;
+  value: number;
+}) {
   return (
-    <p className="mx-auto max-w-2xl px-5 py-28 text-center text-muted-foreground">{children}</p>
+    <Card>
+      <CardContent className="flex items-center gap-3 p-4">
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
+          <Icon className="size-4.5" strokeWidth={1.8} />
+        </span>
+        <div className="min-w-0">
+          <div className="text-xl font-semibold tabular-nums leading-none text-foreground">
+            {value}
+          </div>
+          <div className="mt-1 truncate text-xs text-muted-foreground">{label}</div>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -329,7 +495,7 @@ function NewOrderForm({ onCreated }: { onCreated: () => void }) {
           onChange={(e) => setF({ ...f, destination: e.target.value })}
         />
       </Row>
-      <Button type="submit" variant="cta" disabled={busy} className="w-full">
+      <Button type="submit" disabled={busy} className="w-full">
         {busy ? t.creating : t.createOrder}
       </Button>
     </form>
@@ -387,7 +553,10 @@ function CheckpointForm({ order }: { order: AdminOrder }) {
   }
 
   return (
-    <form className="mt-4 space-y-3 border border-border bg-card p-4" onSubmit={submit}>
+    <form
+      className="mt-2 space-y-3 rounded-md border border-border bg-muted/30 p-4"
+      onSubmit={submit}
+    >
       <Row label={t.checkpoint}>
         <select
           value={e.checkpoint}
@@ -469,7 +638,7 @@ function CheckpointForm({ order }: { order: AdminOrder }) {
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="space-y-1.5">
-      <Label className="eyebrow">{label}</Label>
+      <Label className="text-xs font-medium text-muted-foreground">{label}</Label>
       {children}
     </div>
   );

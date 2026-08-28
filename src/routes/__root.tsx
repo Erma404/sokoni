@@ -4,6 +4,7 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
@@ -121,21 +122,31 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  // The back office is an internal tool, not a page of the public marketing
+  // site — it gets its own shell (see AdminShell) instead of the public
+  // Header/Footer/ContactCta.
+  const isInternal = useRouterState({
+    select: (s) => s.location.pathname.startsWith("/admin"),
+  });
 
   return (
     <QueryClientProvider client={queryClient}>
       <LanguageProvider>
         <SessionProvider>
           <RfqProvider>
-            <div className="flex min-h-screen flex-col">
-              <Header />
-              <main className="flex-1">
-                {/* Required: nested routes render here. */}
-                <Outlet />
-              </main>
-              <ContactCta />
-              <Footer />
-            </div>
+            {isInternal ? (
+              <Outlet />
+            ) : (
+              <div className="flex min-h-screen flex-col">
+                <Header />
+                <main className="flex-1">
+                  {/* Required: nested routes render here. */}
+                  <Outlet />
+                </main>
+                <ContactCta />
+                <Footer />
+              </div>
+            )}
             <Toaster position="top-center" />
           </RfqProvider>
         </SessionProvider>
