@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { Copy, Package, PackageCheck, Truck, Warehouse } from "lucide-react";
+import { Copy, FileUp, Package, PackageCheck, Truck, Warehouse, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/lib/app-context";
 import { STAGES, stageIndex } from "@/lib/checkpoints";
@@ -88,7 +88,12 @@ const COPY = {
     reference: "Référence",
     tempC: "Temp °C",
     documentLabel: "Libellé du document",
-    documentUrl: "URL du document",
+    document: "Document",
+    chooseFile: "Choisir un fichier",
+    uploading: "Envoi…",
+    viewFile: "Voir le fichier",
+    removeFile: "Retirer",
+    documentUploaded: "Document ajouté",
     notes: "Notes",
     logging: "Enregistrement…",
     logCheckpoint: "Enregistrer l'étape",
@@ -138,7 +143,12 @@ const COPY = {
     reference: "Reference",
     tempC: "Temp °C",
     documentLabel: "Document label",
-    documentUrl: "Document URL",
+    document: "Document",
+    chooseFile: "Choose a file",
+    uploading: "Uploading…",
+    viewFile: "View file",
+    removeFile: "Remove",
+    documentUploaded: "Document added",
     notes: "Notes",
     logging: "Logging…",
     logCheckpoint: "Log checkpoint",
@@ -504,6 +514,8 @@ function NewOrderForm({ onCreated }: { onCreated: () => void }) {
 
 function CheckpointForm({ order }: { order: AdminOrder }) {
   const [busy, setBusy] = useState(false);
+  const [uploadingDoc, setUploadingDoc] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { lang } = useLanguage();
   const t = useT(COPY);
   const [e, setE] = useState({
@@ -516,6 +528,26 @@ function CheckpointForm({ order }: { order: AdminOrder }) {
     document_label: "",
     document_url: "",
   });
+
+  async function uploadDocument(file: File) {
+    setUploadingDoc(true);
+    const path = `${order.tracking_code}/${Date.now()}-${file.name}`;
+    const { error } = await supabase.storage
+      .from("tracking-documents")
+      .upload(path, file, { cacheControl: "3600", upsert: false });
+    setUploadingDoc(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    const { data } = supabase.storage.from("tracking-documents").getPublicUrl(path);
+    setE((prev) => ({
+      ...prev,
+      document_url: data.publicUrl,
+      document_label: prev.document_label || file.name,
+    }));
+    toast.success(t.documentUploaded);
+  }
 
   async function submit(ev: React.FormEvent) {
     ev.preventDefault();
@@ -611,13 +643,50 @@ function CheckpointForm({ order }: { order: AdminOrder }) {
             onChange={(ev) => setE({ ...e, document_label: ev.target.value })}
           />
         </Row>
-        <Row label={t.documentUrl}>
-          <Input
-            type="url"
-            maxLength={600}
-            value={e.document_url}
-            onChange={(ev) => setE({ ...e, document_url: ev.target.value })}
+        <Row label={t.document}>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="application/pdf,image/*"
+            className="hidden"
+            onChange={(ev) => {
+              const file = ev.target.files?.[0];
+              if (file) void uploadDocument(file);
+              ev.target.value = "";
+            }}
           />
+          {e.document_url ? (
+            <div className="flex h-9 items-center justify-between gap-2 rounded-md border border-input bg-background px-3 text-xs">
+              <a
+                href={e.document_url}
+                target="_blank"
+                rel="noreferrer"
+                className="truncate text-primary hover:underline"
+              >
+                {t.viewFile}
+              </a>
+              <button
+                type="button"
+                aria-label={t.removeFile}
+                className="shrink-0 text-muted-foreground hover:text-destructive"
+                onClick={() => setE({ ...e, document_url: "" })}
+              >
+                <X className="size-3.5" />
+              </button>
+            </div>
+          ) : (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="h-9 w-full"
+              disabled={uploadingDoc}
+              onClick={() => fileInputRef.current?.click()}
+            >
+              <FileUp className="size-3.5" />
+              {uploadingDoc ? t.uploading : t.chooseFile}
+            </Button>
+          )}
         </Row>
       </div>
       <Row label={t.notes}>
