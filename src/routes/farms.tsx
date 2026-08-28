@@ -1,29 +1,33 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import {
+  ArrowLeft,
+  ArrowRight,
   Beaker,
   ClipboardCheck,
+  Layers,
   Leaf,
   Ruler,
   ShieldCheck,
-  Sprout,
   Thermometer,
 } from "lucide-react";
 import farmerImg from "@/assets/farmer-portrait.jpg";
 import farmHeaderImg from "@/assets/sokoni-loading-hero.png";
 import kirinyagaImg from "@/assets/hero-orchard.jpg";
-import coldImg from "@/assets/cold-chain.jpg";
+import murangaImg from "@/assets/picker-older-man.jpg";
+import meruImg from "@/assets/picker-woman-braids.jpg";
 import { useT } from "@/lib/language";
 
 export const Route = createFileRoute("/farms")({
   head: () => ({
     meta: [
-      { title: "Fermes & qualité — Sokoni Export" },
+      { title: "Nos partenaires — Sokoni Export" },
       {
         name: "description",
         content:
           "Découvrez les fermes kenyanes certifiées derrière Sokoni Export : blocs GlobalGAP et EU Organic à Kirinyaga, Murang'a et Meru, et le processus complet de contrôle qualité derrière chaque carton.",
       },
-      { property: "og:title", content: "Fermes & qualité — Sokoni Export" },
+      { property: "og:title", content: "Nos partenaires — Sokoni Export" },
       {
         property: "og:description",
         content:
@@ -37,7 +41,7 @@ export const Route = createFileRoute("/farms")({
 const COPY = {
   fr: {
     origin: "Origine",
-    title: "Fermes & qualité",
+    title: "Nos partenaires",
     heroBody:
       "Nous achetons auprès d'un groupe restreint de producteurs certifiés dans les hauts plateaux kenyans. Mêmes fermes, mêmes agronomes, même conditionnement — c'est pourquoi la traçabilité tient réellement.",
     heroStats: [
@@ -45,8 +49,31 @@ const COPY = {
       ["492 ha", "certifiés"],
       ["~5 450 t", "par saison"],
     ] as [string, string][],
+    requestQuote: "Demander un devis",
+    seeCatalog: "Voir le catalogue",
+    advantagesKicker: "En un coup d'œil",
+    advantagesTitle: "Ce qui distingue nos partenaires",
+    advantages: [
+      {
+        title: "Traçabilité par bloc",
+        body: "Chaque carton se retrace jusqu'au bloc précis où il a été cueilli, pas seulement à la ferme.",
+      },
+      {
+        title: "Matière sèche vérifiée",
+        body: "Aucun bloc n'est récolté sous 24 % de matière sèche — testé par échantillon avant chaque cueillette.",
+      },
+      {
+        title: "Chaîne du froid dès la cueillette",
+        body: "Pré-refroidi en moins de 6 heures, maintenu à 5–6 °C jusqu'à Rungis.",
+      },
+      {
+        title: "Certifié et audité",
+        body: "GlobalGAP et EU Organic — audit tiers indépendant, certificat vérifiable par lot.",
+      },
+    ],
     certifiedGrowers: "Producteurs certifiés",
     threeFarms: "Trois fermes, connues par leur nom",
+    teaserHint: "Voir le profil",
     area: "Superficie",
     volume: "Volume",
     certification: "Certification",
@@ -123,6 +150,8 @@ const COPY = {
         body: "Le fruit est pré-refroidi dans les six heures suivant la cueillette et maintenu à 5–6 °C. La température de la pulpe est enregistrée à l'entrée, à l'expédition et à l'arrivée — les relevés apparaissent sur l'étape chambre froide.",
       },
     ],
+    testimonyKicker: "Témoignage",
+    testimonyTitle: "Ce que disent nos producteurs",
     certificationTitle: "Certification",
     whatBadgesGuarantee: "Ce que les labels vous garantissent réellement",
     certs: [
@@ -150,7 +179,7 @@ const COPY = {
   },
   en: {
     origin: "Origin",
-    title: "Farms & quality",
+    title: "Our partners",
     heroBody:
       "We buy from a closed group of certified growers in the Kenyan highlands. Same farms, same agronomists, same packhouse — which is why the traceability actually holds.",
     heroStats: [
@@ -158,8 +187,31 @@ const COPY = {
       ["492 ha", "certified"],
       ["~5 450 t", "per season"],
     ] as [string, string][],
+    requestQuote: "Request a quote",
+    seeCatalog: "See the catalog",
+    advantagesKicker: "At a glance",
+    advantagesTitle: "What sets our partners apart",
+    advantages: [
+      {
+        title: "Traceable by block",
+        body: "Every carton traces back to the exact block it was picked from, not just the farm.",
+      },
+      {
+        title: "Dry matter verified",
+        body: "No block is harvested below 24% dry matter — sample-tested before every pick.",
+      },
+      {
+        title: "Cold chain from the pick",
+        body: "Pre-cooled within 6 hours, held at 5–6°C all the way to Rungis.",
+      },
+      {
+        title: "Certified and audited",
+        body: "GlobalGAP and EU Organic — independent third-party audit, certificate verifiable per lot.",
+      },
+    ],
     certifiedGrowers: "Certified growers",
     threeFarms: "Three farms, known by name",
+    teaserHint: "See the profile",
     area: "Area",
     volume: "Volume",
     certification: "Certification",
@@ -236,6 +288,8 @@ const COPY = {
         body: "Fruit is pre-cooled within six hours of picking and held at 5–6 °C. Pulp temperature is logged at intake, at dispatch and on arrival — the readings show on the cold storage checkpoint.",
       },
     ],
+    testimonyKicker: "Testimonial",
+    testimonyTitle: "What our growers say",
     certificationTitle: "Certification",
     whatBadgesGuarantee: "What the badges actually guarantee you",
     certs: [
@@ -263,12 +317,20 @@ const COPY = {
   },
 };
 
-const FARM_IMAGES = [kirinyagaImg, farmerImg, coldImg];
-const QC_ICONS = [Sprout, Beaker, ClipboardCheck, Ruler, Thermometer];
+const FARM_SLUGS = ["kirinyaga", "muranga", "meru"];
+const FARM_IMAGES = [kirinyagaImg, murangaImg, meruImg];
+const ADVANTAGE_ICONS = [Layers, Beaker, Thermometer, ShieldCheck];
+const QC_ICONS = [Leaf, Beaker, ClipboardCheck, Ruler, Thermometer];
 const CERT_ICONS = [ShieldCheck, Leaf];
 
 function Farms() {
   const t = useT(COPY);
+  const [testimonyIndex, setTestimonyIndex] = useState(0);
+  const testimonials = t.farms.map((f, i) => ({
+    quote: f.quote.text,
+    by: f.quote.by,
+    img: FARM_IMAGES[i],
+  }));
 
   return (
     <div>
@@ -280,6 +342,18 @@ function Farms() {
               {t.title}
             </h1>
             <p className="mt-5 max-w-xl text-muted-foreground">{t.heroBody}</p>
+            <div className="mt-7 flex flex-wrap gap-3">
+              <Link to="/rfq">
+                <span className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-bold text-primary-foreground">
+                  {t.requestQuote}
+                </span>
+              </Link>
+              <Link to="/catalog">
+                <span className="inline-flex items-center gap-2 rounded-full border border-border px-6 py-3 text-sm font-semibold text-primary">
+                  {t.seeCatalog}
+                </span>
+              </Link>
+            </div>
             <dl className="mt-8 grid max-w-lg grid-cols-3 gap-4">
               {t.heroStats.map(([v, l]) => (
                 <div key={l} className="rounded-xl border border-border bg-card p-4">
@@ -301,19 +375,82 @@ function Farms() {
         </div>
       </header>
 
-      {/* Farm profiles */}
-      <section className="mx-auto max-w-6xl space-y-16 px-5 py-16">
-        <div>
-          <p className="eyebrow">{t.certifiedGrowers}</p>
+      {/* Advantages — scannable teaser of the facts detailed further down */}
+      <section className="border-y border-border bg-card">
+        <div className="mx-auto max-w-6xl px-5 py-14">
+          <p className="eyebrow">{t.advantagesKicker}</p>
           <h2 className="stencil mt-2 text-2xl font-medium text-primary sm:text-3xl">
-            {t.threeFarms}
+            {t.advantagesTitle}
           </h2>
+          <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {t.advantages.map((a, i) => {
+              const Icon = ADVANTAGE_ICONS[i]!;
+              return (
+                <div key={a.title} className="rounded-2xl border border-border bg-background p-6">
+                  <span className="flex size-11 items-center justify-center rounded-full bg-primary/10 text-primary">
+                    <Icon className="size-5" strokeWidth={1.6} />
+                  </span>
+                  <h3 className="stencil mt-4 text-sm font-medium text-primary">{a.title}</h3>
+                  <p className="mt-2 text-sm text-muted-foreground">{a.body}</p>
+                </div>
+              );
+            })}
+          </div>
         </div>
+      </section>
 
+      {/* Farm teaser cards — quick, photo-led entry points into the full profiles below */}
+      <section className="mx-auto max-w-6xl px-5 py-16">
+        <p className="eyebrow">{t.certifiedGrowers}</p>
+        <h2 className="stencil mt-2 text-2xl font-medium text-primary sm:text-3xl">
+          {t.threeFarms}
+        </h2>
+        <div className="mt-8 grid gap-6 sm:grid-cols-3">
+          {t.farms.map((f, i) => (
+            <a
+              key={f.name}
+              href={`#${FARM_SLUGS[i]}`}
+              className="group block overflow-hidden rounded-2xl border border-border bg-card transition-shadow hover:shadow-md"
+            >
+              <div className="overflow-hidden">
+                <img
+                  src={FARM_IMAGES[i]}
+                  alt={`${f.name}, ${f.region}`}
+                  loading="lazy"
+                  className="aspect-[4/3] w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+              </div>
+              <div className="p-5">
+                <h3 className="stencil text-base font-medium text-primary">{f.name}</h3>
+                <p className="mt-1 text-xs text-muted-foreground">{f.region}</p>
+                <div className="mt-3 flex flex-wrap gap-1.5">
+                  {f.certs.map((c) => (
+                    <span
+                      key={c}
+                      className="rounded-full bg-primary/10 px-2.5 py-0.5 text-[0.65rem] font-medium uppercase tracking-wider text-primary"
+                    >
+                      {c}
+                    </span>
+                  ))}
+                </div>
+                <p className="mt-3 text-sm text-muted-foreground">{f.volume}</p>
+                <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-clay">
+                  {t.teaserHint}
+                  <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
+                </span>
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      {/* Farm profiles */}
+      <section className="mx-auto max-w-6xl space-y-16 px-5 pb-16">
         {t.farms.map((f, i) => (
           <article
             key={f.name}
-            className={`grid items-center gap-8 md:grid-cols-[0.85fr_1.15fr] md:gap-12 ${
+            id={FARM_SLUGS[i]}
+            className={`scroll-mt-24 grid items-center gap-8 md:grid-cols-[0.85fr_1.15fr] md:gap-12 ${
               i % 2 === 1 ? "md:[&>figure]:order-2" : ""
             }`}
           >
@@ -357,11 +494,6 @@ function Farms() {
                   </dd>
                 </div>
               </dl>
-
-              <blockquote className="mt-6 rounded-2xl border-l-4 border-ochre bg-card p-5">
-                <p className="text-sm italic text-foreground">“{f.quote.text}”</p>
-                <footer className="mt-2 text-xs text-muted-foreground">— {f.quote.by}</footer>
-              </blockquote>
             </div>
           </article>
         ))}
@@ -413,8 +545,60 @@ function Farms() {
         </div>
       </section>
 
-      {/* Certifications */}
+      {/* Testimonial gallery — same pattern as the homepage, fed by the three real
+          farm-lead quotes already told in each profile above. */}
       <section className="mx-auto max-w-6xl px-5 py-16">
+        <div className="grid items-center gap-8 md:grid-cols-2 md:gap-10">
+          <div className="flex flex-col gap-4">
+            <p className="eyebrow">{t.testimonyKicker}</p>
+            <h2 className="stencil text-2xl font-medium text-primary sm:text-3xl">
+              {t.testimonyTitle}
+            </h2>
+            <p className="text-lg leading-snug text-foreground">
+              "{testimonials[testimonyIndex]?.quote}"
+            </p>
+            <p className="stencil text-xs text-muted-foreground">
+              {testimonials[testimonyIndex]?.by}
+            </p>
+          </div>
+
+          <div className="relative">
+            <img
+              src={testimonials[testimonyIndex]?.img}
+              alt={t.farms[testimonyIndex]?.name ?? ""}
+              className="aspect-[4/3] w-full rounded-2xl object-cover"
+            />
+            {testimonials.length > 1 && (
+              <div className="absolute left-4 top-1/2 flex -translate-y-1/2 flex-col gap-2">
+                <button
+                  type="button"
+                  aria-label="Suivant"
+                  onClick={() => setTestimonyIndex((i) => (i + 1) % testimonials.length)}
+                  className="flex size-9 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg"
+                >
+                  <ArrowRight className="size-4" />
+                </button>
+                <button
+                  type="button"
+                  aria-label="Précédent"
+                  onClick={() =>
+                    setTestimonyIndex((i) => (i - 1 + testimonials.length) % testimonials.length)
+                  }
+                  className="flex size-9 items-center justify-center rounded-full border border-border bg-card text-primary shadow-lg"
+                >
+                  <ArrowLeft className="size-4" />
+                </button>
+              </div>
+            )}
+            <div className="absolute bottom-4 left-4 rounded-full bg-card/95 px-2.5 py-1 text-[11px] font-medium text-muted-foreground shadow">
+              {testimonyIndex + 1}/{testimonials.length}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Certifications */}
+      <section className="mx-auto max-w-6xl px-5 pb-16">
         <p className="eyebrow">{t.certificationTitle}</p>
         <h2 className="stencil mt-2 text-2xl font-medium text-primary sm:text-3xl">
           {t.whatBadgesGuarantee}
@@ -424,7 +608,7 @@ function Farms() {
           {t.certs.map(({ name, tagline, guarantees }, i) => {
             const Icon = CERT_ICONS[i]!;
             return (
-              <div key={name} className="rounded-3xl border border-border bg-card p-8">
+              <div key={name} className="rounded-2xl border border-border bg-card p-8">
                 <div className="flex items-center gap-5">
                   <span className="flex size-20 shrink-0 items-center justify-center rounded-full bg-ochre/25 text-primary">
                     <Icon className="size-9" strokeWidth={1.4} />
