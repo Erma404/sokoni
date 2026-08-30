@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { ArrowUpRight, Menu, X } from "lucide-react";
+import { ArrowUpRight, LayoutDashboard, LogOut, Menu, ShieldCheck, User, X } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useRfq, useSession } from "@/lib/app-context";
@@ -8,6 +8,14 @@ import { Wordmark } from "@/components/site/Brand";
 import avocadoHandfulImg from "@/assets/avocado-handful.jpg";
 import avocadoCrateImg from "@/assets/avocado-crate-closeup.jpg";
 import { cn } from "@/lib/utils";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const HELVETICA = '"Helvetica Neue", Helvetica, Arial, sans-serif';
 
@@ -27,6 +35,8 @@ const COPY = {
     myOrders: "Mes commandes",
     signOut: "Se déconnecter",
     signIn: "Se connecter",
+    myAccount: "Mon compte",
+    accountMenu: "Menu du compte",
     toggleNav: "Ouvrir/fermer la navigation",
     rfqCart: "Panier de devis",
     footerTagline:
@@ -49,6 +59,8 @@ const COPY = {
     myOrders: "My orders",
     signOut: "Sign out",
     signIn: "Sign in",
+    myAccount: "My account",
+    accountMenu: "Account menu",
     toggleNav: "Toggle navigation",
     rfqCart: "RFQ cart",
     footerTagline:
@@ -65,6 +77,67 @@ const COPY = {
     copyright: "Nairobi · Rungis",
   },
 };
+
+/**
+ * Signed-in identity — collapses "Mes commandes" / "Back-office" /
+ * "Se déconnecter" into a single account menu instead of stacking them as
+ * separate items in the main nav, the way any SaaS app header keeps
+ * account actions out of primary navigation.
+ */
+function AccountMenu({
+  user,
+  isAdmin,
+  onSignOut,
+  t,
+}: {
+  user: { email?: string | null };
+  isAdmin: boolean;
+  onSignOut: () => void;
+  t: (typeof COPY)["fr"];
+}) {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          type="button"
+          aria-label={t.accountMenu}
+          className="flex size-8 items-center justify-center rounded-full bg-[#f6f8f7] text-[#44554a] transition-colors hover:text-[#0a4934]"
+        >
+          <User className="size-4" strokeWidth={2} />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-56">
+        {user.email && (
+          <>
+            <DropdownMenuLabel className="truncate font-normal text-muted-foreground">
+              {user.email}
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+          </>
+        )}
+        <DropdownMenuItem asChild>
+          <Link to="/dashboard" className="cursor-pointer">
+            <LayoutDashboard className="size-4" />
+            {t.myOrders}
+          </Link>
+        </DropdownMenuItem>
+        {isAdmin && (
+          <DropdownMenuItem asChild>
+            <Link to="/admin" className="cursor-pointer">
+              <ShieldCheck className="size-4" />
+              {t.backOffice}
+            </Link>
+          </DropdownMenuItem>
+        )}
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={onSignOut} className="cursor-pointer text-clay">
+          <LogOut className="size-4" />
+          {t.signOut}
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
 
 function LanguageSwitch({ className }: { className?: string }) {
   const { lang, setLang } = useLanguage();
@@ -152,29 +225,9 @@ export function Header() {
               {count}
             </span>
           </Link>
-          {isAdmin && (
-            <Link
-              to="/admin"
-              className="text-sm text-[#44554a] transition-colors hover:text-[#0a4934]"
-            >
-              {t.backOffice}
-            </Link>
-          )}
+
           {user ? (
-            <>
-              <Link
-                to="/dashboard"
-                className="text-sm text-[#44554a] transition-colors hover:text-[#0a4934]"
-              >
-                {t.myOrders}
-              </Link>
-              <button
-                onClick={signOut}
-                className="text-sm text-[#44554a] transition-colors hover:text-[#0a4934]"
-              >
-                {t.signOut}
-              </button>
-            </>
+            <AccountMenu user={user} isAdmin={isAdmin} onSignOut={signOut} t={t} />
           ) : (
             <Link
               to="/auth"
@@ -183,6 +236,7 @@ export function Header() {
               {t.signIn}
             </Link>
           )}
+
           <Link to="/rfq">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-[#0a4934] px-5 py-2.5 text-xs font-bold text-white transition-colors hover:bg-[#0a4934]/90">
               {t.requestQuote}
@@ -218,29 +272,39 @@ export function Header() {
             <Link to="/rfq" onClick={() => setOpen(false)} className="text-sm text-[#142b21]">
               {t.rfqCart} ({count})
             </Link>
-            {isAdmin && (
-              <Link to="/admin" onClick={() => setOpen(false)} className="text-sm text-[#142b21]">
-                {t.backOffice}
-              </Link>
-            )}
-            {user ? (
-              <>
-                <Link
-                  to="/dashboard"
-                  onClick={() => setOpen(false)}
-                  className="text-sm text-[#142b21]"
-                >
-                  {t.myOrders}
+
+            {/* Account actions — visually separated from marketing nav so
+                the drawer doesn't read as one flat, undifferentiated list. */}
+            <div className="mt-1 flex flex-col gap-3 border-t border-[#e5e5e0] pt-3">
+              {user ? (
+                <>
+                  {user.email && <p className="truncate text-xs text-[#8a9690]">{user.email}</p>}
+                  <Link
+                    to="/dashboard"
+                    onClick={() => setOpen(false)}
+                    className="text-sm text-[#142b21]"
+                  >
+                    {t.myOrders}
+                  </Link>
+                  {isAdmin && (
+                    <Link
+                      to="/admin"
+                      onClick={() => setOpen(false)}
+                      className="text-sm text-[#142b21]"
+                    >
+                      {t.backOffice}
+                    </Link>
+                  )}
+                  <button className="text-left text-sm text-[#526158]" onClick={signOut}>
+                    {t.signOut}
+                  </button>
+                </>
+              ) : (
+                <Link to="/auth" onClick={() => setOpen(false)} className="text-sm text-[#142b21]">
+                  {t.signIn}
                 </Link>
-                <button className="text-left text-sm text-[#526158]" onClick={signOut}>
-                  {t.signOut}
-                </button>
-              </>
-            ) : (
-              <Link to="/auth" onClick={() => setOpen(false)} className="text-sm text-[#142b21]">
-                {t.signIn}
-              </Link>
-            )}
+              )}
+            </div>
           </div>
         </div>
       )}
@@ -253,7 +317,10 @@ export function Footer() {
   return (
     <footer className="mt-3 bg-white">
       <div className="mx-auto max-w-[1800px] px-3 sm:px-5 lg:px-8">
-        <div className="rounded-xl bg-[#f4f4f2] px-[7%] py-16 sm:py-20" style={{ fontFamily: HELVETICA }}>
+        <div
+          className="rounded-xl bg-[#f4f4f2] px-[7%] py-16 sm:py-20"
+          style={{ fontFamily: HELVETICA }}
+        >
           <div className="grid gap-12 lg:grid-cols-[1fr_1.4fr] lg:gap-8">
             <div className="text-center lg:text-left">
               <span className="inline-block">
