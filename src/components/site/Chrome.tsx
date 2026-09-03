@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { ArrowUpRight, LayoutDashboard, LogOut, Menu, ShieldCheck, User, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useRfq, useSession } from "@/lib/app-context";
 import { useLanguage, useT, type Lang } from "@/lib/language";
@@ -18,6 +18,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const HELVETICA = '"Helvetica Neue", Helvetica, Arial, sans-serif';
+
+// Shared anchor so the floating header can watch for the footer entering
+// the viewport and hide itself, instead of floating on top of it.
+const FOOTER_ID = "site-footer";
 
 const NAV: { to: string; label: Record<Lang, string> }[] = [
   { to: "/catalog", label: { fr: "Catalogue", en: "Catalog" } },
@@ -173,6 +177,7 @@ export function Header() {
   const { user, isAdmin } = useSession();
   const { count } = useRfq();
   const [open, setOpen] = useState(false);
+  const [nearFooter, setNearFooter] = useState(false);
   const navigate = useNavigate();
   const { lang } = useLanguage();
   const t = useT(COPY);
@@ -182,12 +187,29 @@ export function Header() {
     navigate({ to: "/", replace: true });
   }
 
+  // Hide the floating header as soon as the footer starts entering the
+  // viewport, so the pill doesn't end up hovering over the footer content.
+  useEffect(() => {
+    const footer = document.getElementById(FOOTER_ID);
+    if (!footer) return;
+    const observer = new IntersectionObserver(([entry]) => setNearFooter(entry.isIntersecting), {
+      rootMargin: "0px 0px -10% 0px",
+    });
+    observer.observe(footer);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <header
-      className="sticky top-0 z-50 bg-white/95 backdrop-blur"
+      className={cn(
+        "sticky top-3 z-50 px-3 transition-all duration-300 sm:top-4 sm:px-5",
+        nearFooter ? "pointer-events-none -translate-y-6 opacity-0" : "translate-y-0 opacity-100",
+      )}
       style={{ fontFamily: HELVETICA }}
     >
-      <div className="mx-auto grid h-20 max-w-6xl grid-cols-[auto_1fr_auto] items-center gap-4 px-5">
+      {/* Detached floating bar — margin on every side + full pill radius,
+          instead of a full-bleed strip glued to the viewport edges. */}
+      <div className="mx-auto grid h-16 max-w-6xl grid-cols-[auto_1fr_auto] items-center gap-4 rounded-full border border-[#e5e5e0] bg-white/90 px-4 shadow-[0_4px_24px_-4px_rgba(10,73,52,0.12)] backdrop-blur-md sm:px-5">
         <Link
           to="/"
           aria-label="Sokoni Export home"
@@ -254,7 +276,7 @@ export function Header() {
       </div>
 
       {open && (
-        <div className="border-t border-[#e5e5e0] bg-white px-5 py-4 xl:hidden">
+        <div className="mx-auto mt-2 max-w-6xl rounded-2xl border border-[#e5e5e0] bg-white px-5 py-4 shadow-[0_12px_32px_-8px_rgba(10,73,52,0.18)] xl:hidden">
           <div className="flex flex-col gap-3">
             {NAV.map((item) => (
               <Link
@@ -315,7 +337,7 @@ export function Header() {
 export function Footer() {
   const t = useT(COPY);
   return (
-    <footer className="mt-3 bg-white">
+    <footer id={FOOTER_ID} className="mt-3 bg-white">
       <div className="mx-auto max-w-[1800px] px-3 sm:px-5 lg:px-8">
         <div
           className="rounded-xl bg-[#f4f4f2] px-[7%] py-16 sm:py-20"
